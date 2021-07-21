@@ -13,10 +13,11 @@ class UserService(
 {
     private val logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
-    fun saveUser(userToSave: User)
+    fun saveUser(userToSave: User): User
     {
         this.logger.info("### user to save $userToSave")
         val userSaved = this.userDAO.save(userToSave)
         this.logger.info("### user #${userSaved.id} saved successfully")
+        return userSaved
     }
 }
