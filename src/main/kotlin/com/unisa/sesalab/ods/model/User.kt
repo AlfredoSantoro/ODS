@@ -1,28 +1,39 @@
 package com.unisa.sesalab.ods.model
 
+import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
 import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
 class User(
-        @Column(nullable = false)
-        val name: String,
-        @Column(nullable = false)
-        val surname: String,
-        @Column(nullable = false)
+        @Column(name = "NAME", nullable = false)
+        var name: String,
+        @Column(name = "SURNAME", nullable = false)
+        var surname: String,
+        @Column(name = "USER_TYPE", nullable = false)
         @Enumerated(EnumType.STRING)
-        val userType: UserType,
-        @Column(nullable = false)
-        val email: String,
-        @Column(nullable = false)
+        var userType: UserType,
+        @Column(name = "EMAIL", nullable = false)
+        var email: String,
+        @Column(name = "VALID_UNTIL", nullable = false)
         val validUntil: LocalDate,
-        @Column(nullable = false)
-        val username: String,
-        @Column(nullable = false)
-        val password: String
+        @Column(name = "USERNAME", nullable = false)
+        var username: String,
+        @Column(name = "PASSWORD", nullable = false)
+        var password: String
 )
 {
+    constructor(userDTO: UserDTO): this (
+            userDTO.name,
+            userDTO.surname,
+            userDTO.userType,
+            userDTO.email,
+            LocalDate.now(),
+            userDTO.username,
+            userDTO.password
+    )
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1
