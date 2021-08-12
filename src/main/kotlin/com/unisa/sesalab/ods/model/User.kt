@@ -2,10 +2,13 @@ package com.unisa.sesalab.ods.model
 
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
+import org.hibernate.annotations.ResultCheckStyle
+import org.hibernate.annotations.SQLDelete
 import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
+@SQLDelete(sql = "UPDATE user set deleted = true where id = ?", check = ResultCheckStyle.COUNT)
 class User(
         @Column(name = "NAME", nullable = false)
         var name: String,
@@ -33,6 +36,10 @@ class User(
             userDTO.username,
             userDTO.password
     )
+
+    // SOFT DELETE
+    @Column(nullable = false)
+    private var deleted: Boolean = false
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

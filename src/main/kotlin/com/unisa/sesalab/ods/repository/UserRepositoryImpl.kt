@@ -2,25 +2,36 @@ package com.unisa.sesalab.ods.repository
 
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.model.User
+import org.hibernate.Session
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import javax.persistence.EntityManager
 
 @Repository
-class UserRepositoryImpl: UserRepository
+class UserRepositoryImpl(
+        private val em: EntityManager
+): UserRepository
 {
-    override fun insertUser(userDTO: UserDTO): User
+    private val logger: Logger = LoggerFactory.getLogger(UserRepositoryImpl::class.java)
+
+    override fun insertUser(userDTO: UserDTO)
     {
-        val newUser = User(userDTO)
-        // TODO newUser to save on DB ( criteriaAPI, JPQL or jdbcTemplate ??? )
-        return newUser
+        val userToSave = User(userDTO)
+        val userId = this.em.unwrap(Session::class.java).save(userToSave) as Long
+        this.logger.info("new user #$userId successfully saved")
     }
 
-    override fun deleteUser(userId: Long): User
+    // THIS IS A SOFT DELETE. SEE #User entity
+    override fun deleteUser(userId: Long)
     {
-        TODO("Not yet implemented")
+        val userOnDb = this.em.find(User::class.java, userId)
+        this.em.remove(userOnDb)
     }
 
-    override fun findById(id: Long): User {
-        TODO("Not yet implemented")
+    override fun findById(id: Long): User
+    {
+        return this.em.find(User::class.java, id)
     }
 
 }
