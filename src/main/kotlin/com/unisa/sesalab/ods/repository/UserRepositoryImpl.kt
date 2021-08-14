@@ -1,7 +1,7 @@
 package com.unisa.sesalab.ods.repository
 
-import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.model.User
+import com.unisa.sesalab.ods.model.Users
 import org.hibernate.Session
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,23 +15,22 @@ class UserRepositoryImpl(
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryImpl::class.java)
 
-    override fun insertUser(userDTO: UserDTO)
+    override fun insertUser(user: User)
     {
-        val userToSave = User(userDTO)
-        val userId = this.em.unwrap(Session::class.java).save(userToSave) as Long
+        val userId = this.em.unwrap(Session::class.java).save(user) as Long
         this.logger.info("new user #$userId successfully saved")
     }
 
     // THIS IS A SOFT DELETE. SEE #User entity
     override fun deleteUser(userId: Long)
     {
-        val userOnDb = this.em.find(User::class.java, userId)
-        this.em.remove(userOnDb)
+        val usersOnDb = this.em.find(Users::class.java, userId)
+        this.em.remove(usersOnDb)
     }
 
-    override fun findById(id: Long): User
+    override fun findById(id: Long): Users
     {
-        return this.em.find(User::class.java, id)
+        return this.em.find(Users::class.java, id)
     }
 
 }

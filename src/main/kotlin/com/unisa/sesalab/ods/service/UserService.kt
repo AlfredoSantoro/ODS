@@ -1,6 +1,5 @@
 package com.unisa.sesalab.ods.service
 
-import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.model.User
 import com.unisa.sesalab.ods.repository.UserRepository
 import org.slf4j.Logger
@@ -13,10 +12,9 @@ class UserService(private val userRepository: UserRepository)
 {
     private val logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
-    fun saveUser(userDTO: UserDTO): User
+    fun saveUser(user: User)
     {
-        val userSaved = this.userRepository.insertUser(userDTO)
-        this.logger.info("### user #${userSaved.id} saved successfully")
-        return userSaved
+        this.logger.info("### saving user > $user")
+        this.userRepository.insertUser(user)
     }
 }
