@@ -22,16 +22,25 @@ class UserRepositoryImpl(
         return user
     }
 
-    // THIS IS A SOFT DELETE. SEE #User entity
+    // THIS IS A SOFT DELETE
     override fun deleteUser(userId: Long)
     {
-        val usersOnDb = this.em.find(Users::class.java, userId)
-        this.em.remove(usersOnDb)
+        val usersOnDb = this.findById(userId)
+        usersOnDb.deleted = true
+        this.em.persist(usersOnDb)
+        this.logger.info("### user #$userId deleted")
     }
 
     override fun findById(id: Long): Users
     {
         return this.em.find(Users::class.java, id)
+    }
+
+    override fun updateUser(userToUpdate: User): User
+    {
+        val userUpdated = this.em.unwrap(Session::class.java).merge(userToUpdate) as Users
+        this.logger.info("### user #${userUpdated.id} up to date")
+        return userUpdated
     }
 
 }

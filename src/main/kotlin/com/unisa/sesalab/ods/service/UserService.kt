@@ -7,16 +7,17 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
-// TODO create interface for userService
 @Service
-class UserService(private val userRepository: UserRepository)
+class UserService(
+        private val userRepository: UserRepository
+)
 {
     private val logger: Logger = LoggerFactory.getLogger(UserService::class.java)
 
-    fun saveUser(userRepository: UserRepository, user: User)
+    fun saveUser(user: User): User
     {
         this.logger.info("### UserService saving user > $user")
-        val userLogic = UserLogic(userRepository)
-        userLogic.save(user)
+        val userLogic = UserLogic(this.userRepository)
+        return userLogic.save(user)
     }
 }

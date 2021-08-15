@@ -11,4 +11,5 @@ interface UserRepository
     fun insertUser(user: User): User
     fun deleteUser(userId: Long)
     fun findById(id: Long): Users
+    fun updateUser(userToUpdate: User): User
 }

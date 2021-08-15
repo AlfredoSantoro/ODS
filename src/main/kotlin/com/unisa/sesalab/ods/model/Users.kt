@@ -1,12 +1,10 @@
 package com.unisa.sesalab.ods.model
 
 import com.unisa.sesalab.ods.enum.UserType
-import org.hibernate.annotations.ResultCheckStyle
-import org.hibernate.annotations.SQLDelete
 import java.time.LocalDate
 import javax.persistence.*
 
-@SQLDelete(sql = "UPDATE user set deleted = true where id = ?", check = ResultCheckStyle.COUNT)
+@Entity
 class Users(
         @Column(name = "NAME", nullable = false)
         override var name: String,
@@ -28,7 +26,7 @@ class Users(
 {
     // SOFT DELETE
     @Column(nullable = false)
-    private var deleted: Boolean = false
+    var deleted: Boolean = false
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
