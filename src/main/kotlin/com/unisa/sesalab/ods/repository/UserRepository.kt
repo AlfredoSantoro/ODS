@@ -8,7 +8,7 @@ import com.unisa.sesalab.ods.model.Users
  */
 interface UserRepository
 {
-    fun insertUser(user: User)
+    fun insertUser(user: User): User
     fun deleteUser(userId: Long)
     fun findById(id: Long): Users
 }

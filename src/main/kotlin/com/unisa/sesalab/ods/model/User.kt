@@ -9,7 +9,7 @@ interface User
     var surname: String
     var userType: UserType
     var email: String
-    val validUntil: LocalDate
     var username: String
     var password: String
+    var validUntil: LocalDate?
 }

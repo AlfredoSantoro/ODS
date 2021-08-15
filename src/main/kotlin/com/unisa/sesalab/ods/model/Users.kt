@@ -18,7 +18,8 @@ class Users(
         @Column(name = "EMAIL", nullable = false)
         override var email: String,
         @Column(name = "VALID_UNTIL", nullable = false)
-        override val validUntil: LocalDate,
+        // if validUntil property is null, it will be valid for up to 100 years
+        override var validUntil: LocalDate ? = LocalDate.now().plusYears(100),
         @Column(name = "USERNAME", nullable = false)
         override var username: String,
         @Column(name = "PASSWORD", nullable = false)
@@ -32,6 +33,7 @@ class Users(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1
+
     override fun toString(): String
     {
         return "User(name='$name', surname='$surname', userType=$userType, email='$email', validUntil=$validUntil, " +

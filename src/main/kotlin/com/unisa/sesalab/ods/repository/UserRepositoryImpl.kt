@@ -15,10 +15,11 @@ class UserRepositoryImpl(
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryImpl::class.java)
 
-    override fun insertUser(user: User)
+    override fun insertUser(user: User): User
     {
         val userId = this.em.unwrap(Session::class.java).save(user) as Long
         this.logger.info("new user #$userId successfully saved")
+        return user
     }
 
     // THIS IS A SOFT DELETE. SEE #User entity
