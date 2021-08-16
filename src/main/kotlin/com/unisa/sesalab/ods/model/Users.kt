@@ -1,5 +1,6 @@
 package com.unisa.sesalab.ods.model
 
+import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
 import java.time.LocalDate
 import javax.persistence.*
@@ -7,23 +8,32 @@ import javax.persistence.*
 @Entity
 class Users(
         @Column(name = "NAME", nullable = false)
-        override var name: String,
+        var name: String,
         @Column(name = "SURNAME", nullable = false)
-        override var surname: String,
+        var surname: String,
         @Column(name = "USER_TYPE", nullable = false)
         @Enumerated(EnumType.STRING)
-        override var userType: UserType,
+        var userType: UserType,
         @Column(name = "EMAIL", nullable = false)
-        override var email: String,
+        var email: String,
         @Column(name = "VALID_UNTIL", nullable = false)
-        // if validUntil property is null, it will be valid for up to 100 years
-        override var validUntil: LocalDate ? = LocalDate.now().plusYears(100),
+        var validUntil: LocalDate,
         @Column(name = "USERNAME", nullable = false)
-        override var username: String,
+        var username: String,
         @Column(name = "PASSWORD", nullable = false)
-        override var password: String
-): User
+        var password: String
+)
 {
+    constructor(userDTO: UserDTO): this(
+            userDTO.name,
+            userDTO.surname,
+            userDTO.userType,
+            userDTO.email,
+            userDTO.validUntil ?: LocalDate.now().plusYears(100),
+            userDTO.username,
+            userDTO.password
+    )
+
     // SOFT DELETE
     @Column(nullable = false)
     var deleted: Boolean = false

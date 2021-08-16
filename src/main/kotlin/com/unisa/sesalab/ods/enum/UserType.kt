@@ -4,6 +4,6 @@ enum class UserType
 {
     ADMIN,
     GUEST,
-    REGISTERED,
+    USER,
     UNKNOWN
 }
