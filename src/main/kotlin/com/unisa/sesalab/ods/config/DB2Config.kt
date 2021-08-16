@@ -5,10 +5,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
 import org.springframework.core.env.Environment
+import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.annotation.EnableTransactionManagement
+import java.util.*
 import javax.sql.DataSource
 
 @Configuration
@@ -23,10 +25,10 @@ class DB2Config
     fun db2DataSource(): DataSource
     {
         val dataSource = DriverManagerDataSource()
-        dataSource.setDriverClassName(this.env.getRequiredProperty("datasource.driver-class-name"))
-        dataSource.url = this.env.getRequiredProperty("datasource.url")
-        dataSource.username = this.env.getRequiredProperty("datasource.username")
-        dataSource.password = this.env.getRequiredProperty("datasource.password")
+        dataSource.setDriverClassName(this.env.getRequiredProperty("spring.datasource.driver-class-name"))
+        dataSource.url = this.env.getRequiredProperty("spring.datasource.url")
+        dataSource.username = this.env.getRequiredProperty("spring.datasource.username")
+        dataSource.password = this.env.getRequiredProperty("spring.datasource.password")
         return dataSource
     }
 
@@ -37,6 +39,23 @@ class DB2Config
         em.dataSource = this.db2DataSource()
         em.setPackagesToScan("com.unisa.sesalab.ods.model")
         em.jpaVendorAdapter = HibernateJpaVendorAdapter()
+        em.setJpaProperties(this.additionalProperties())
         return em
+    }
+
+    @Bean
+    fun transactionManager(): DataSourceTransactionManager
+    {
+        val dataSourceTransactionManager = DataSourceTransactionManager()
+        dataSourceTransactionManager.dataSource = this.db2DataSource()
+        return dataSourceTransactionManager
+    }
+
+    fun additionalProperties(): Properties
+    {
+        val properties = Properties()
+        properties.setProperty("hibernate.dialect", this.env.getRequiredProperty("spring.jpa.database-platform"))
+        properties.setProperty("hibernate.hbm2ddl.auto", this.env.getRequiredProperty("spring.jpa.hibernate.ddl-auto"))
+        return properties
     }
 }

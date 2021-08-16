@@ -11,18 +11,21 @@ import javax.persistence.EntityManager
 /**
  * User Repository for DB2 DBMS
  */
+
+@Qualifier("UserRepositoryDB2")
 @Repository
 class UserRepositoryDB2Impl(
         @Qualifier(value = "db2EntityManager")
         private val em: EntityManager
-): BaseRepository<Users, Long>
+): BaseRepository<Users>
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryDB2Impl::class.java)
 
-    override fun save(entity: Users)
+    override fun save(entity: Users): Long
     {
         val userId = this.em.unwrap(Session::class.java).save(entity) as Long
         this.logger.info("new user #$userId successfully saved")
+        return userId
     }
 
     override fun update(entityToUpdate: Users): Users
@@ -42,7 +45,7 @@ class UserRepositoryDB2Impl(
     {
         val usersOnDb = this.findById(entityId)
         usersOnDb.deleted = true
-        this.em.persist(usersOnDb)
+        this.update(usersOnDb)
         this.logger.info("### user #$entityId deleted")
     }
 

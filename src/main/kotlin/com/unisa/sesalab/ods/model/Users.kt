@@ -18,7 +18,7 @@ class Users(
         var email: String,
         @Column(name = "VALID_UNTIL", nullable = false)
         var validUntil: LocalDate,
-        @Column(name = "USERNAME", nullable = false)
+        @Column(name = "USERNAME", nullable = false, unique = true)
         var username: String,
         @Column(name = "PASSWORD", nullable = false)
         var password: String
