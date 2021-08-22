@@ -1,15 +1,12 @@
 package com.unisa.sesalab.ods.repository
 
-import org.springframework.transaction.annotation.Transactional
-
 /**
  * A base crud repository
  */
-@Transactional
-interface BaseRepository<T>
+interface BaseCrudRepository<T, K>
 {
     fun save(entity: T): Long
-    fun update(entityToUpdate: T): T
+    fun update(entityId: Long, data: K): T
     fun findById(entityId: Long): T
     fun delete(entityId: Long)
 }

@@ -1,5 +1,6 @@
 package com.unisa.sesalab.ods.repository
 
+import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.model.Users
 import org.hibernate.Session
 import org.slf4j.Logger
@@ -17,7 +18,7 @@ import javax.persistence.EntityManager
 class UserRepositoryDB2Impl(
         @Qualifier(value = "db2EntityManager")
         private val em: EntityManager
-): BaseRepository<Users>
+): BaseCrudRepository<Users, UserDTO>
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryDB2Impl::class.java)
 
@@ -28,11 +29,26 @@ class UserRepositoryDB2Impl(
         return userId
     }
 
-    override fun update(entityToUpdate: Users): Users
+    override fun update(entityId: Long, data: UserDTO): Users
     {
-        val userUpdated = this.em.unwrap(Session::class.java).merge(entityToUpdate) as Users
-        this.logger.info("### user #${userUpdated.id} up to date")
-        return userUpdated
+        val session = this.em.unwrap(Session::class.java) as Session
+        val databaseSession = session.sessionFactory.openSession()
+        this.logger.info("### begin transaction to update user")
+        val tx = databaseSession.beginTransaction()
+        val u = databaseSession.find(Users::class.java, entityId)
+        u.name = data.name
+        u.surname = data.surname
+        u.email = data.email
+        u.validUntil = data.validUntil ?: u.validUntil
+        u.password = data.password
+        u.userType = data.userType
+        u.username = data.username
+        databaseSession.flush()
+        tx.commit()
+        databaseSession.close()
+        this.logger.info("### transaction closed to update user")
+        this.logger.info("### user #${u.id} up to date")
+        return u
     }
 
     override fun findById(entityId: Long): Users
@@ -40,12 +56,16 @@ class UserRepositoryDB2Impl(
         return this.em.find(Users::class.java, entityId)
     }
 
-    // THIS IS A SOFT DELETE
     override fun delete(entityId: Long)
     {
-        val usersOnDb = this.findById(entityId)
+        val session = this.em.unwrap(Session::class.java) as Session
+        val databaseSession = session.sessionFactory.openSession()
+        val tx = databaseSession.beginTransaction()
+        val usersOnDb = databaseSession.find(Users::class.java, entityId)
         usersOnDb.deleted = true
-        this.update(usersOnDb)
+        databaseSession.flush()
+        tx.commit()
+        databaseSession.close()
         this.logger.info("### user #$entityId deleted")
     }
 

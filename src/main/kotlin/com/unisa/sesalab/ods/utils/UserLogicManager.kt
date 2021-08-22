@@ -1,23 +1,28 @@
 package com.unisa.sesalab.ods.utils
 
-import com.unisa.sesalab.ods.repository.BaseRepository
+import com.unisa.sesalab.ods.repository.BaseCrudRepository
 
-data class UserLogicManager<T>(
-        private val baseRepository: BaseRepository<T>
+data class UserLogicManager<T, K>(
+        private val repo: BaseCrudRepository<T, K>
 )
 {
-    fun saveUser(user: T): Long
+    fun saveUser(entity: T): Long
     {
-        return this.baseRepository.save(user)
+        return this.repo.save(entity)
     }
 
-    fun findById(userId: Long): T
+    fun findById(entityId: Long): T
     {
-        return this.baseRepository.findById(userId)
+        return this.repo.findById(entityId)
     }
 
-    fun delete(userId: Long)
+    fun delete(entityId: Long)
     {
-        this.baseRepository.delete(userId)
+        this.repo.delete(entityId)
+    }
+
+    fun update(entityId: Long, data: K): T
+    {
+        return this.repo.update(entityId, data)
     }
 }

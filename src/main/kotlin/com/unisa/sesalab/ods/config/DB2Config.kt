@@ -55,6 +55,7 @@ class DB2Config
     {
         val properties = Properties()
         properties.setProperty("hibernate.dialect", this.env.getRequiredProperty("spring.jpa.database-platform"))
+        properties.setProperty("hibernate.show_sql", this.env.getRequiredProperty("spring.jpa.show-sql"))
         properties.setProperty("hibernate.hbm2ddl.auto", this.env.getRequiredProperty("spring.jpa.hibernate.ddl-auto"))
         return properties
     }

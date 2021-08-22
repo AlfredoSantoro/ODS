@@ -3,16 +3,12 @@ package com.unisa.sesalab.ods.service
 import com.unisa.sesalab.ods.BaseTest
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
-import com.unisa.sesalab.ods.model.Users
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UsersServiceTest: BaseTest()
 {
-    private val users = mutableListOf<Users>()
-
     @Test
     fun `Should save a new User`()
     {
@@ -27,7 +23,6 @@ class UsersServiceTest: BaseTest()
         )
         val userID = this.usersService.saveUser(userDTO)
         val userOnDb = this.usersService.findById(userID)
-        this.users.add(userOnDb)
         Assertions.assertThat(userOnDb).isNotNull
         Assertions.assertThat(userOnDb.id).isNotEqualTo(-1)
         Assertions.assertThat(userOnDb.name).isEqualTo(userDTO.name)
@@ -40,11 +35,55 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.validUntil).isEqualTo(LocalDate.now().plusYears(100))
     }
 
-/*    @AfterAll
-    fun deleteMockUsers()
+    @Test
+    fun `Should perform a soft delete`()
     {
-        this.users.forEach {
-            this.usersService.deleteById(it.id)
-        }
-    }*/
+        val userDTO = UserDTO(
+                "NameTest",
+                "SurnameTest",
+                UserType.ADMIN,
+                "test@test.it",
+                "username_test2",
+                "password_test",
+                null
+        )
+        val userID = this.usersService.saveUser(userDTO)
+        Assertions.assertThat(userID).isNotEqualTo(-1)
+        this.usersService.deleteById(userID)
+        val userOnDB = this.usersService.findById(userID)
+        Assertions.assertThat(userOnDB.deleted).isTrue
+    }
+
+    @Test
+    fun `Should update an entity`()
+    {
+        val userDTO = UserDTO(
+                "NameTest",
+                "SurnameTest",
+                UserType.ADMIN,
+                "test@test.it",
+                "username_test3",
+                "password_test",
+                null
+        )
+        val userID = this.usersService.saveUser(userDTO)
+        val userOnDb = this.usersService.findById(userID)
+        Assertions.assertThat(userOnDb).isNotNull
+        Assertions.assertThat(userOnDb.id).isNotEqualTo(-1)
+        Assertions.assertThat(userOnDb.name).isEqualTo(userDTO.name)
+        Assertions.assertThat(userOnDb.surname).isEqualTo(userDTO.surname)
+        Assertions.assertThat(userOnDb.userType).isEqualTo(userDTO.userType)
+        Assertions.assertThat(userOnDb.email).isEqualTo(userDTO.email)
+        Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
+        Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
+        Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
+        Assertions.assertThat(userOnDb.validUntil).isEqualTo(LocalDate.now().plusYears(100))
+        val newUser = UserDTO(userOnDb)
+        newUser.username = "new-username"
+        newUser.password = "new-password"
+        this.usersService.update(userID, newUser)
+        val newUserOnDB = this.usersService.findById(userID)
+        Assertions.assertThat(newUserOnDB.username).isEqualTo("new-username")
+        Assertions.assertThat(newUserOnDB.password).isEqualTo("new-password")
+    }
 }
