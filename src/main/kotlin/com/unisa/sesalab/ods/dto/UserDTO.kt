@@ -14,7 +14,7 @@ data class UserDTO(
         var email: String,
         var username: String,
         var password: String,
-        var validUntil: LocalDate?
+        var authorizedUntil: LocalDate?
 )
 {
     constructor(users: Users): this(
@@ -24,6 +24,6 @@ data class UserDTO(
             users.email,
             users.username,
             users.password,
-            users.validUntil
+            users.authorizedUntil
     )
 }

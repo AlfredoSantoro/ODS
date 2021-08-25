@@ -6,6 +6,7 @@ import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
+// AUTHORIZED_UNTIL - authorizedUntil
 class Users(
         @Column(name = "NAME", nullable = false)
         var name: String,
@@ -16,8 +17,8 @@ class Users(
         var userType: UserType,
         @Column(name = "EMAIL", nullable = false)
         var email: String,
-        @Column(name = "VALID_UNTIL", nullable = false)
-        var validUntil: LocalDate,
+        @Column(name = "AUTHORIZED_UNTIL", nullable = false)
+        var authorizedUntil: LocalDate,
         @Column(name = "USERNAME", nullable = false, unique = true)
         var username: String,
         @Column(name = "PASSWORD", nullable = false)
@@ -29,7 +30,7 @@ class Users(
             userDTO.surname,
             userDTO.userType,
             userDTO.email,
-            userDTO.validUntil ?: LocalDate.now().plusYears(100),
+            userDTO.authorizedUntil ?: LocalDate.now().plusYears(100),
             userDTO.username,
             userDTO.password
     )
@@ -44,7 +45,7 @@ class Users(
 
     override fun toString(): String
     {
-        return "User(name='$name', surname='$surname', userType=$userType, email='$email', validUntil=$validUntil, " +
+        return "User(name='$name', surname='$surname', userType=$userType, email='$email', validUntil=$authorizedUntil, " +
                 "username='$username', password='$password', id=$id)"
     }
 

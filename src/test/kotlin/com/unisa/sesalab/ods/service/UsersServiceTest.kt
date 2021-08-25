@@ -32,7 +32,7 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
         Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
         Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
-        Assertions.assertThat(userOnDb.validUntil).isEqualTo(LocalDate.now().plusYears(100))
+        Assertions.assertThat(userOnDb.authorizedUntil).isEqualTo(LocalDate.now().plusYears(100))
     }
 
     @Test
@@ -77,7 +77,7 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
         Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
         Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
-        Assertions.assertThat(userOnDb.validUntil).isEqualTo(LocalDate.now().plusYears(100))
+        Assertions.assertThat(userOnDb.authorizedUntil).isEqualTo(LocalDate.now().plusYears(100))
         val newUser = UserDTO(userOnDb)
         newUser.username = "new-username"
         newUser.password = "new-password"

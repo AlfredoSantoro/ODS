@@ -40,7 +40,7 @@ class UserRepositoryDB2Impl(
         u.name = data.name
         u.surname = data.surname
         u.email = data.email
-        u.validUntil = data.validUntil ?: u.validUntil
+        u.authorizedUntil = data.authorizedUntil ?: u.authorizedUntil
         u.password = data.password
         u.userType = data.userType
         u.username = data.username
