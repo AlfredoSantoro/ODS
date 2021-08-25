@@ -86,4 +86,25 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(newUserOnDB.username).isEqualTo("new-username")
         Assertions.assertThat(newUserOnDB.password).isEqualTo("new-password")
     }
+
+    @Test
+    fun `Should find a user by username`()
+    {
+        val userDTO = UserDTO(
+                "NameTest",
+                "SurnameTest",
+                UserType.ADMIN,
+                "test@test.it",
+                "username_test3",
+                "password_test",
+                null
+        )
+        val userID = this.usersService.saveUser(userDTO)
+        Assertions.assertThat(userID).isNotNull
+        Assertions.assertThat(userID).isNotEqualTo(-1)
+        val userByUsername = this.usersService.findByUsername(userDTO.username)
+        Assertions.assertThat(userByUsername).isNotNull
+        Assertions.assertThat(userByUsername!!.id).isEqualTo(userID)
+        Assertions.assertThat(userByUsername.username).isEqualTo(userDTO.username)
+    }
 }

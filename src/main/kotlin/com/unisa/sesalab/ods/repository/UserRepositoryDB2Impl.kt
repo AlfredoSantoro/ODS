@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
 /**
  * User Repository for DB2 DBMS
@@ -18,7 +19,7 @@ import javax.persistence.EntityManager
 class UserRepositoryDB2Impl(
         @Qualifier(value = "db2EntityManager")
         private val em: EntityManager
-): BaseCrudRepository<Users, UserDTO>
+): UserRepository<Users, UserDTO>
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryDB2Impl::class.java)
 
@@ -67,6 +68,25 @@ class UserRepositoryDB2Impl(
         tx.commit()
         databaseSession.close()
         this.logger.info("### user #$entityId deleted")
+    }
+
+    override fun findByUsernameIgnoreCase(username: String): Users?
+    {
+        val session = this.em.unwrap(Session::class.java) as Session
+        val cb = session.criteriaBuilder
+        val criteriaQuery = cb.createQuery(Users::class.java)
+        val root = criteriaQuery.from(Users::class.java)
+        val path = root.get<String>("username")
+        criteriaQuery.select(root).where(cb.equal(cb.lower(path), username.lowercase()))
+        return try
+        {
+            session.createQuery(criteriaQuery).singleResult
+        }
+        catch (error: NoResultException)
+        {
+            this.logger.error("### an error occurred during the execution of the findByUsername query" , error)
+            null
+        }
     }
 
 }
