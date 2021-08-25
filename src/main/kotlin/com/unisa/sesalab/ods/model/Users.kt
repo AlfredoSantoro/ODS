@@ -6,7 +6,6 @@ import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
-// AUTHORIZED_UNTIL - authorizedUntil
 class Users(
         @Column(name = "NAME", nullable = false)
         var name: String,
