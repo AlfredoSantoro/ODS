@@ -3,7 +3,7 @@ package com.unisa.sesalab.ods.model
 import java.time.OffsetDateTime
 import javax.persistence.*
 
-@Entity
+@Entity(name = "ACCESS_AUTHORIZATIONS")
 class AccessAuthorizations(
         var start: OffsetDateTime,
         var end: OffsetDateTime,
