@@ -4,16 +4,16 @@ import java.time.OffsetDateTime
 import javax.persistence.*
 
 @Entity
-class Reservations(
-        val name: String,
-        val start: OffsetDateTime,
-        val end: OffsetDateTime,
+class AccessAuthorizations(
+        var start: OffsetDateTime,
+        var end: OffsetDateTime,
+        var reason: String,
         @ManyToOne(fetch = FetchType.LAZY)
-        val user: Users,
-        @ManyToOne(fetch = FetchType.LAZY)
-        val seat: Seats
+        val user: Users
 )
 {
+    var granted = false
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1

@@ -5,7 +5,6 @@ import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class UsersServiceTest: BaseTest()
 {
@@ -18,8 +17,7 @@ class UsersServiceTest: BaseTest()
                 UserType.ADMIN,
                 "test@test.it",
                 "username_test",
-                "password_test",
-                null
+                "password_test"
         )
         val userID = this.usersService.saveUser(userDTO)
         val userOnDb = this.usersService.findById(userID)
@@ -32,7 +30,6 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
         Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
         Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
-        Assertions.assertThat(userOnDb.authorizedUntil).isEqualTo(LocalDate.now().plusYears(100))
     }
 
     @Test
@@ -44,8 +41,7 @@ class UsersServiceTest: BaseTest()
                 UserType.ADMIN,
                 "test@test.it",
                 "username_test2",
-                "password_test",
-                null
+                "password_test"
         )
         val userID = this.usersService.saveUser(userDTO)
         Assertions.assertThat(userID).isNotEqualTo(-1)
@@ -63,8 +59,7 @@ class UsersServiceTest: BaseTest()
                 UserType.ADMIN,
                 "test@test.it",
                 "username_test3",
-                "password_test",
-                null
+                "password_test"
         )
         val userID = this.usersService.saveUser(userDTO)
         val userOnDb = this.usersService.findById(userID)
@@ -77,7 +72,6 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
         Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
         Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
-        Assertions.assertThat(userOnDb.authorizedUntil).isEqualTo(LocalDate.now().plusYears(100))
         val newUser = UserDTO(userOnDb)
         newUser.username = "new-username"
         newUser.password = "new-password"
@@ -96,8 +90,7 @@ class UsersServiceTest: BaseTest()
                 UserType.ADMIN,
                 "test@test.it",
                 "username_test3",
-                "password_test",
-                null
+                "password_test"
         )
         val userID = this.usersService.saveUser(userDTO)
         Assertions.assertThat(userID).isNotNull

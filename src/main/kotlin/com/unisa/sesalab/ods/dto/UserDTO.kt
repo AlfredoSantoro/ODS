@@ -2,7 +2,6 @@ package com.unisa.sesalab.ods.dto
 
 import com.unisa.sesalab.ods.enum.UserType
 import com.unisa.sesalab.ods.model.Users
-import java.time.LocalDate
 
 /**
  * Data Transfer Object for Users model
@@ -13,8 +12,7 @@ data class UserDTO(
         var userType: UserType,
         var email: String,
         var username: String,
-        var password: String,
-        var authorizedUntil: LocalDate?
+        var password: String
 )
 {
     constructor(users: Users): this(
@@ -23,7 +21,6 @@ data class UserDTO(
             users.userType,
             users.email,
             users.username,
-            users.password,
-            users.authorizedUntil
+            users.password
     )
 }

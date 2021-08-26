@@ -2,7 +2,6 @@ package com.unisa.sesalab.ods.model
 
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
-import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
@@ -16,8 +15,6 @@ class Users(
         var userType: UserType,
         @Column(name = "EMAIL", nullable = false)
         var email: String,
-        @Column(name = "AUTHORIZED_UNTIL", nullable = false)
-        var authorizedUntil: LocalDate,
         @Column(name = "USERNAME", nullable = false, unique = true)
         var username: String,
         @Column(name = "PASSWORD", nullable = false)
@@ -29,7 +26,6 @@ class Users(
             userDTO.surname,
             userDTO.userType,
             userDTO.email,
-            userDTO.authorizedUntil ?: LocalDate.now().plusYears(100),
             userDTO.username,
             userDTO.password
     )
@@ -44,7 +40,7 @@ class Users(
 
     override fun toString(): String
     {
-        return "User(name='$name', surname='$surname', userType=$userType, email='$email', validUntil=$authorizedUntil, " +
+        return "User(name='$name', surname='$surname', userType=$userType, email='$email', " +
                 "username='$username', password='$password', id=$id)"
     }
 
