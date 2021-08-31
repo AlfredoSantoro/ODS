@@ -19,10 +19,11 @@ class UsersServiceTest: BaseTest()
                 "username_test",
                 "password_test"
         )
-        val userID = this.usersService.saveUser(userDTO)
-        val userOnDb = this.usersService.findById(userID)
+        val userID = this.usersService.signUpUser(userDTO)
+        Assertions.assertThat(userID).isNotNull
+        val userOnDb = this.usersService.findById(userID!!)
         Assertions.assertThat(userOnDb).isNotNull
-        Assertions.assertThat(userOnDb.id).isNotEqualTo(-1)
+        Assertions.assertThat(userOnDb!!.id).isNotEqualTo(-1)
         Assertions.assertThat(userOnDb.name).isEqualTo(userDTO.name)
         Assertions.assertThat(userOnDb.surname).isEqualTo(userDTO.surname)
         Assertions.assertThat(userOnDb.userType).isEqualTo(userDTO.userType)
@@ -43,11 +44,13 @@ class UsersServiceTest: BaseTest()
                 "username_test2",
                 "password_test"
         )
-        val userID = this.usersService.saveUser(userDTO)
+        val userID = this.usersService.signUpUser(userDTO)
+        Assertions.assertThat(userID).isNotNull
         Assertions.assertThat(userID).isNotEqualTo(-1)
-        this.usersService.deleteById(userID)
+        this.usersService.deleteById(userID!!)
         val userOnDB = this.usersService.findById(userID)
-        Assertions.assertThat(userOnDB.deleted).isTrue
+        Assertions.assertThat(userOnDB).isNotNull
+        Assertions.assertThat(userOnDB!!.deleted).isTrue
     }
 
     @Test
@@ -61,10 +64,11 @@ class UsersServiceTest: BaseTest()
                 "username_test3",
                 "password_test"
         )
-        val userID = this.usersService.saveUser(userDTO)
-        val userOnDb = this.usersService.findById(userID)
+        val userID = this.usersService.signUpUser(userDTO)
+        Assertions.assertThat(userID).isNotNull
+        val userOnDb = this.usersService.findById(userID!!)
         Assertions.assertThat(userOnDb).isNotNull
-        Assertions.assertThat(userOnDb.id).isNotEqualTo(-1)
+        Assertions.assertThat(userOnDb!!.id).isNotEqualTo(-1)
         Assertions.assertThat(userOnDb.name).isEqualTo(userDTO.name)
         Assertions.assertThat(userOnDb.surname).isEqualTo(userDTO.surname)
         Assertions.assertThat(userOnDb.userType).isEqualTo(userDTO.userType)
@@ -77,7 +81,8 @@ class UsersServiceTest: BaseTest()
         newUser.password = "new-password"
         this.usersService.update(userID, newUser)
         val newUserOnDB = this.usersService.findById(userID)
-        Assertions.assertThat(newUserOnDB.username).isEqualTo("new-username")
+        Assertions.assertThat(newUserOnDB).isNotNull
+        Assertions.assertThat(newUserOnDB!!.username).isEqualTo("new-username")
         Assertions.assertThat(newUserOnDB.password).isEqualTo("new-password")
     }
 
@@ -92,7 +97,7 @@ class UsersServiceTest: BaseTest()
                 "username_test3",
                 "password_test"
         )
-        val userID = this.usersService.saveUser(userDTO)
+        val userID = this.usersService.signUpUser(userDTO)
         Assertions.assertThat(userID).isNotNull
         Assertions.assertThat(userID).isNotEqualTo(-1)
         val userByUsername = this.usersService.findByUsername(userDTO.username)

@@ -69,6 +69,7 @@ class UserRepositoryDB2Impl(
         this.logger.info("### user #$entityId deleted")
     }
 
+    @Throws(NoResultException::class)
     override fun findByUsernameIgnoreCase(username: String): Users?
     {
         val session = this.em.unwrap(Session::class.java) as Session
@@ -77,15 +78,7 @@ class UserRepositoryDB2Impl(
         val root = criteriaQuery.from(Users::class.java)
         val path = root.get<String>("username")
         criteriaQuery.select(root).where(cb.equal(cb.lower(path), username.lowercase()))
-        return try
-        {
-            session.createQuery(criteriaQuery).singleResult
-        }
-        catch (error: NoResultException)
-        {
-            this.logger.error("### an error occurred during the execution of the findByUsername query" , error)
-            null
-        }
+        return session.createQuery(criteriaQuery).singleResult
     }
 
 }
