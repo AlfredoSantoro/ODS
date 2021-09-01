@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.unisa"
-version = "0.0.1-SNAPSHOT"
+version = properties["application_version"] as String
 java.sourceCompatibility = JavaVersion.VERSION_16
 
 repositories {
@@ -37,21 +37,26 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.jar {
+    archiveFileName.set("sesalab-${properties["application_version"]}-ods.jar")
+    destinationDirectory.set(layout.buildDirectory.dir("$rootDir/dist"))
+}
+
 publishing {
     repositories {
         maven {
             name = "GitHub-Packages-Alfredo-Santoro"
             url = uri("https://maven.pkg.github.com/AlfredoSantoro/ODS")
             credentials {
-                username = "AlfredoSantoro"
-                password = "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"
+                username = project.properties["repo_username"] as String
+                password = project.properties["repo_password"] as String
             }
         }
     }
 
     publications {
-        register<MavenPublication>("gpr") {
-            artifact("$rootDir/dist/sesalab-${version}-ods.jar")
+        register<MavenPublication>("sesalab-${properties["application_version"]}-ods.jar") {
+            artifact("$rootDir/dist/sesalab-${properties["application_version"]}-ods.jar")
         }
     }
 }
