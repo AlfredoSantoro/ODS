@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.5.20"
     kotlin("plugin.spring") version "1.5.20"
     kotlin("plugin.jpa") version "1.5.20"
+    id("maven-publish")
 }
 
 group = "com.unisa"
@@ -34,4 +35,23 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHub-Packages-Alfredo-Santoro"
+            url = uri("https://maven.pkg.github.com/AlfredoSantoro/ODS")
+            credentials {
+                username = "AlfredoSantoro"
+                password = "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"
+            }
+        }
+    }
+
+    publications {
+        register<MavenPublication>("gpr") {
+            artifact("$rootDir/dist/sesalab-${version}-ods.jar")
+        }
+    }
 }
