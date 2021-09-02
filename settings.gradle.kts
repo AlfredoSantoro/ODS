@@ -1,1 +1,1 @@
-rootProject.name = "ods"
+rootProject.name = "sesalabods"
