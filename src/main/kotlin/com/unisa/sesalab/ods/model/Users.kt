@@ -2,6 +2,7 @@ package com.unisa.sesalab.ods.model
 
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
+import org.apache.commons.codec.digest.DigestUtils
 import javax.persistence.*
 
 @Entity
@@ -18,7 +19,7 @@ class Users(
         @Column(name = "USERNAME", nullable = false, unique = true)
         var username: String,
         @Column(name = "PASSWORD", nullable = false)
-        var password: String
+        var encodedPassword: String
 )
 {
     constructor(userDTO: UserDTO): this(
@@ -27,7 +28,7 @@ class Users(
             userDTO.userType,
             userDTO.email,
             userDTO.username,
-            userDTO.password
+            DigestUtils.sha256Hex(userDTO.plainPassword)
     )
 
     // SOFT DELETE
@@ -41,7 +42,7 @@ class Users(
     override fun toString(): String
     {
         return "User(name='$name', surname='$surname', userType=$userType, email='$email', " +
-                "username='$username', password='$password', id=$id)"
+                "username='$username', password='$encodedPassword', id=$id)"
     }
 
 }

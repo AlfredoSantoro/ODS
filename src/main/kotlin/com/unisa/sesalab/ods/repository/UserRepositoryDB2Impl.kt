@@ -2,6 +2,7 @@ package com.unisa.sesalab.ods.repository
 
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.model.Users
+import org.apache.commons.codec.digest.DigestUtils
 import org.hibernate.Session
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -40,7 +41,7 @@ class UserRepositoryDB2Impl(
         u.name = data.name
         u.surname = data.surname
         u.email = data.email
-        u.password = data.password
+        u.encodedPassword = DigestUtils.sha256Hex(data.plainPassword)
         u.userType = data.userType
         u.username = data.username
         databaseSession.flush()

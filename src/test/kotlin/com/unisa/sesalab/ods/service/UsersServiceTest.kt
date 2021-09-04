@@ -3,6 +3,7 @@ package com.unisa.sesalab.ods.service
 import com.unisa.sesalab.ods.BaseTest
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.enum.UserType
+import org.apache.commons.codec.digest.DigestUtils
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -30,7 +31,7 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.email).isEqualTo(userDTO.email)
         Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
         Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
-        Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
+        Assertions.assertThat(userOnDb.encodedPassword).isEqualTo(DigestUtils.sha256Hex(userDTO.plainPassword))
     }
 
     @Test
@@ -75,15 +76,13 @@ class UsersServiceTest: BaseTest()
         Assertions.assertThat(userOnDb.email).isEqualTo(userDTO.email)
         Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
         Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
-        Assertions.assertThat(userOnDb.password).isEqualTo(userDTO.password)
-        val newUser = UserDTO(userOnDb)
-        newUser.username = "new-username"
-        newUser.password = "new-password"
+        Assertions.assertThat(userOnDb.encodedPassword).isEqualTo(DigestUtils.sha256Hex(userDTO.plainPassword))
+        val newUser = UserDTO(userOnDb.name, userOnDb.surname, userOnDb.userType, userOnDb.email, "new-username", "new-password")
         this.usersService.update(userID, newUser)
         val newUserOnDB = this.usersService.findById(userID)
         Assertions.assertThat(newUserOnDB).isNotNull
         Assertions.assertThat(newUserOnDB!!.username).isEqualTo("new-username")
-        Assertions.assertThat(newUserOnDB.password).isEqualTo("new-password")
+        Assertions.assertThat(newUserOnDB.encodedPassword).isEqualTo(DigestUtils.sha256Hex("new-password"))
     }
 
     @Test
@@ -94,7 +93,7 @@ class UsersServiceTest: BaseTest()
                 "SurnameTest",
                 UserType.ADMIN,
                 "test@test.it",
-                "username_test3",
+                "username_test4",
                 "password_test"
         )
         val userID = this.usersService.signUpUser(userDTO)

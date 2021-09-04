@@ -22,7 +22,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.ibm.db2.jcc:db2jcc:db2jcc4")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("commons-codec:commons-codec:1.11")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
     runtimeOnly("com.ibm.db2.jcc:db2jcc:db2jcc4")
 }
 
