@@ -1,5 +1,6 @@
-package com.unisa.sesalab.ods.utils
+package com.unisa.sesalab.ods.logic.users
 
+import com.unisa.sesalab.ods.logic.BasicLogicManager
 import com.unisa.sesalab.ods.repository.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

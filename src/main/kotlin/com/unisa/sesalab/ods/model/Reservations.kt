@@ -5,16 +5,16 @@ import javax.persistence.*
 
 @Entity
 class Reservations(
-        val name: String,
-        val start: OffsetDateTime,
-        val end: OffsetDateTime,
+        override val name: String,
+        override val start: OffsetDateTime,
+        override val end: OffsetDateTime,
         @ManyToOne(fetch = FetchType.LAZY)
-        val user: Users,
+        override val user: Users,
         @ManyToOne(fetch = FetchType.LAZY)
-        val seat: Seats
-)
+        override val seat: Seats
+): IReservations
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = -1
+    override val id: Long = -1
 }

@@ -5,6 +5,5 @@ enum class SeatState
     AVAILABLE,
     UNAVAILABLE,
     OCCUPIED,
-    FREE,
     UNKNOWN
 }

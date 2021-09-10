@@ -1,4 +1,4 @@
-package com.unisa.sesalab.ods.utils
+package com.unisa.sesalab.ods.logic
 
 import com.unisa.sesalab.ods.repository.BaseCrudRepository
 
