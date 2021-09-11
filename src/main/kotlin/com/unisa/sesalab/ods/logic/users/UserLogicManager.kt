@@ -1,7 +1,7 @@
 package com.unisa.sesalab.ods.logic.users
 
 import com.unisa.sesalab.ods.logic.BasicLogicManager
-import com.unisa.sesalab.ods.repository.UserRepository
+import com.unisa.sesalab.ods.repository.users.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.persistence.NoResultException

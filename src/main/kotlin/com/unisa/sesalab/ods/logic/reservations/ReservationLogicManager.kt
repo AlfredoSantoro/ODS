@@ -15,13 +15,20 @@ class ReservationLogicManager<K>(
 {
     private val logger: Logger = LoggerFactory.getLogger(ReservationLogicManager::class.java)
 
+    @Synchronized
     override fun createReservation(reservation: IReservations)
     {
         /* PSEUDO CODE
-        * Check that the reservation interval is a time which the laboratory is open
+        * Sorting ascending of user authorizations
+        * Check that the interval of the reservation is included interval in the time of the latest granted authorization
+        * to access the lab.
+        * If the user is not authorized then, throws exception.
+        * Check that the reservation interval is included in the opening times of the laboratory.
         * If the reservation interval is not included in the laboratory opening times then throws an exception
-        * Check that the seat is available for the selected date and time
+        * Check that the seat to reserve is available
         * If the seat is occupied or unavailable then throws an exception
+        * Check that the user does not already have a reservation on going
+        * if all the previous rules are respected, then create a reservation for the user
         * */
     }
 

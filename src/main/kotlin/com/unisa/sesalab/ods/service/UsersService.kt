@@ -3,7 +3,7 @@ package com.unisa.sesalab.ods.service
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.logic.users.UserLogicManager
 import com.unisa.sesalab.ods.model.Users
-import com.unisa.sesalab.ods.repository.UserRepository
+import com.unisa.sesalab.ods.repository.users.UserRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 

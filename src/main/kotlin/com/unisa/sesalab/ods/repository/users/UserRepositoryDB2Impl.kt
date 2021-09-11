@@ -1,4 +1,4 @@
-package com.unisa.sesalab.ods.repository
+package com.unisa.sesalab.ods.repository.users
 
 import com.unisa.sesalab.ods.dto.UserDTO
 import com.unisa.sesalab.ods.model.Users
@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
-import javax.persistence.NoResultException
 
 /**
  * User Repository for DB2 DBMS
@@ -70,7 +69,6 @@ class UserRepositoryDB2Impl(
         this.logger.info("### user #$entityId deleted")
     }
 
-    @Throws(NoResultException::class)
     override fun findByUsernameIgnoreCase(username: String): Users?
     {
         val session = this.em.unwrap(Session::class.java) as Session

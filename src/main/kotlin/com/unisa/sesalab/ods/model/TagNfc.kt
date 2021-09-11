@@ -7,8 +7,8 @@ import javax.persistence.Id
 
 @Entity
 class TagNfc(
-        val name: String,
-        val value: String
+        var name: String,
+        var value: String
 )
 {
     @Id
