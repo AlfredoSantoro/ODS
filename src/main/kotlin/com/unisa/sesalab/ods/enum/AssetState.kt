@@ -1,6 +1,6 @@
 package com.unisa.sesalab.ods.enum
 
-enum class SeatState
+enum class AssetState
 {
     AVAILABLE,
     UNAVAILABLE,
