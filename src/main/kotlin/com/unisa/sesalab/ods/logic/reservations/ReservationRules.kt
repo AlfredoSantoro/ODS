@@ -1,6 +1,9 @@
 package com.unisa.sesalab.ods.logic.reservations
 
+import com.unisa.sesalab.ods.exception.ReservationConstraintsException
+
 interface ReservationRules
 {
-    fun verify()
+    @Throws(ReservationConstraintsException::class)
+    fun validReservation()
 }

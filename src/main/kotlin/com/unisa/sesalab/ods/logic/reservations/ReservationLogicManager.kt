@@ -1,38 +1,46 @@
 package com.unisa.sesalab.ods.logic.reservations
 
+import com.unisa.sesalab.ods.dto.ReservationDTO
+import com.unisa.sesalab.ods.enum.IdType
+import com.unisa.sesalab.ods.exception.ReservationConstraintsException
 import com.unisa.sesalab.ods.logic.BasicLogicManager
+import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class ReservationLogicManager<Entity, K>(
-        private val reservationRepository: ReservationRepository<Entity, K>,
-        private val reservationLogic: ReservationLogic<Entity>
-):BasicLogicManager<Entity, K>(reservationRepository)
+class ReservationLogicManager(
+        private val reservationRepository: ReservationRepository<Reservation, ReservationDTO>,
+        private val reservationRules: ReservationRules
+):BasicLogicManager<Reservation, ReservationDTO>(reservationRepository)
 {
     private val logger: Logger = LoggerFactory.getLogger(ReservationLogicManager::class.java)
 
-    fun createReservation(userId: Long, assetId: Long, reservation: Entity)
+    fun createNewReservation(reservation: Reservation): Long
     {
-        /*
-         * find all reservation by userID and check that there is not an existing one for the same user
-         * check that does not exist a reservation ongoing for the same asset to reserve
-         * after all this, reservationLogic.validReservation(reservation)
-         * so, reservationRepository.save(reservation)
-         */
+        // find all reservations overlaps
+        if ( this.reservationRepository.findAllReservationsOverlapsBy(IdType.USER_ID, reservation.user.id, reservation.start, reservation.end).isNotEmpty() )
+        {
+            throw ReservationConstraintsException("user #${reservation.user.id} cannot have two or more reservations at the same time")
+        }
+        else
+        {
+            synchronized(Any()) {
+                // Check that the asset to reserve is available
+                if ( this.reservationRepository.findAllReservationsOverlapsBy(IdType.ASSET_ID, reservation.asset.id, reservation.start, reservation.end).isNotEmpty() )
+                {
+                    throw ReservationConstraintsException("asset #${reservation.asset.id} is reserved")
+                }
+                else
+                {
+                    // validReservation
+                    this.reservationRules.validReservation()
+                    this.logger.info("### saving a new reservation for asset #${reservation.asset.id} and user #${reservation.user.id}")
+                    val resId = this.save(reservation)
+                    this.logger.info("### reservation #$resId saved successfully")
+                    return resId
+                }
+            }
+        }
     }
 }
-
-/* PSEUDO CODE
-@Synchronized
-* Sorting ascending of user authorizations
-* Check that the interval of the reservation is included interval in the time of the latest granted authorization
-* to access the lab.
-* If the user is not authorized then, throws exception.
-* Check that the reservation interval is included in the opening times of the laboratory.
-* If the reservation interval is not included in the laboratory opening times then throws an exception
-* Check that the seat to reserve is available
-* If the seat is occupied or unavailable then throws an exception
-* Check that the user does not already have a reservation on going
-* if all the previous rules are respected, then create a reservation for the user
-* */

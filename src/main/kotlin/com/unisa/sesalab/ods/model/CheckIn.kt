@@ -6,7 +6,7 @@ import javax.persistence.*
 @Entity
 class CheckIn(
         @ManyToOne(fetch = FetchType.LAZY)
-        val reservations: Reservations,
+        val reservation: Reservation,
         val time: OffsetDateTime
 )
 {

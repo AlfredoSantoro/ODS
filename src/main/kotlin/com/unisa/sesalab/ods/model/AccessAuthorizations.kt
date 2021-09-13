@@ -9,7 +9,7 @@ class AccessAuthorizations(
         var end: OffsetDateTime,
         var reason: String,
         @ManyToOne(fetch = FetchType.LAZY)
-        val user: Users
+        val user: User
 )
 {
     var granted = false

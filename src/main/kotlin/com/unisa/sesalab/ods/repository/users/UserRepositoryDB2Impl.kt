@@ -1,7 +1,7 @@
 package com.unisa.sesalab.ods.repository.users
 
 import com.unisa.sesalab.ods.dto.UserDTO
-import com.unisa.sesalab.ods.model.Users
+import com.unisa.sesalab.ods.model.User
 import org.apache.commons.codec.digest.DigestUtils
 import org.hibernate.Session
 import org.slf4j.Logger
@@ -20,24 +20,24 @@ import javax.persistence.NoResultException
 class UserRepositoryDB2Impl(
         @Qualifier(value = "db2EntityManager")
         private val em: EntityManager
-): UserRepository<Users, UserDTO>
+): UserRepository<User, UserDTO>
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryDB2Impl::class.java)
 
-    override fun save(entity: Users): Long
+    override fun save(entity: User): Long
     {
         val userId = this.em.unwrap(Session::class.java).save(entity) as Long
         this.logger.info("new user #$userId successfully saved")
         return userId
     }
 
-    override fun update(entityId: Long, data: UserDTO): Users
+    override fun update(entityId: Long, data: UserDTO): User
     {
         val session = this.em.unwrap(Session::class.java) as Session
         val databaseSession = session.sessionFactory.openSession()
         this.logger.info("### begin transaction to update user")
         val tx = databaseSession.beginTransaction()
-        val u = databaseSession.find(Users::class.java, entityId)
+        val u = databaseSession.find(User::class.java, entityId)
         u.name = data.name
         u.surname = data.surname
         u.email = data.email
@@ -52,9 +52,9 @@ class UserRepositoryDB2Impl(
         return u
     }
 
-    override fun findById(entityId: Long): Users
+    override fun findById(entityId: Long): User
     {
-        return this.em.find(Users::class.java, entityId)
+        return this.em.find(User::class.java, entityId)
     }
 
     override fun delete(entityId: Long)
@@ -62,8 +62,8 @@ class UserRepositoryDB2Impl(
         val session = this.em.unwrap(Session::class.java) as Session
         val databaseSession = session.sessionFactory.openSession()
         val tx = databaseSession.beginTransaction()
-        val usersOnDb = databaseSession.find(Users::class.java, entityId)
-        usersOnDb.deleted = true
+        val userOnDb = databaseSession.find(User::class.java, entityId)
+        userOnDb.deleted = true
         databaseSession.flush()
         tx.commit()
         databaseSession.close()
@@ -71,12 +71,12 @@ class UserRepositoryDB2Impl(
     }
 
     @Throws(NoResultException::class)
-    override fun findByUsernameIgnoreCase(username: String): Users?
+    override fun findByUsernameIgnoreCase(username: String): User?
     {
         val session = this.em.unwrap(Session::class.java) as Session
         val cb = session.criteriaBuilder
-        val criteriaQuery = cb.createQuery(Users::class.java)
-        val root = criteriaQuery.from(Users::class.java)
+        val criteriaQuery = cb.createQuery(User::class.java)
+        val root = criteriaQuery.from(User::class.java)
         val path = root.get<String>("username")
         criteriaQuery.select(root).where(cb.equal(cb.lower(path), username.lowercase()))
         return session.createQuery(criteriaQuery).singleResult

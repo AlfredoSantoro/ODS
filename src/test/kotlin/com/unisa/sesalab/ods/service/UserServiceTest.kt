@@ -7,7 +7,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-class UsersServiceTest: BaseTest()
+class UserServiceTest: BaseTest()
 {
     @Test
     fun `Should save a new User`()

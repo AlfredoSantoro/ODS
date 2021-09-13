@@ -6,13 +6,13 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import javax.persistence.NoResultException
 
-data class UserLogicManager<T, K>(
-        private val rep: UserRepository<T, K>
-): BasicLogicManager<T, K>(rep)
+data class UserLogicManager<Entity, DataTransferObject>(
+        private val rep: UserRepository<Entity, DataTransferObject>
+): BasicLogicManager<Entity, DataTransferObject>(rep)
 {
     private val logger: Logger = LoggerFactory.getLogger(UserLogicManager::class.java)
 
-    fun findUserByUsername(username: String): T?
+    fun findUserByUsername(username: String): Entity?
     {
         return try
         {
@@ -25,7 +25,7 @@ data class UserLogicManager<T, K>(
         }
     }
 
-    fun signUpUser(user: T, username: String): Long?
+    fun signUpUser(user: Entity, username: String): Long?
     {
         return if ( this.findUserByUsername(username) == null )
         {
@@ -40,7 +40,7 @@ data class UserLogicManager<T, K>(
         }
     }
 
-    fun findUserById(userId: Long): T?
+    fun findUserById(userId: Long): Entity?
     {
         return try
         {
@@ -65,7 +65,7 @@ data class UserLogicManager<T, K>(
         }
     }
 
-    fun updateUser(userId: Long, data: K)
+    fun updateUser(userId: Long, data: DataTransferObject)
     {
         try
         {

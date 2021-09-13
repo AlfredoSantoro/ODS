@@ -6,7 +6,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import javax.persistence.*
 
 @Entity
-class Users(
+class User(
         @Column(name = "NAME", nullable = false)
         var name: String,
         @Column(name = "SURNAME", nullable = false)
