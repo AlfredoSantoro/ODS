@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.repository.tagnfc
 
 import com.unisa.sesalab.ods.dto.TagNfcDTO
@@ -17,7 +18,7 @@ class TagNFCRepositoryDB2Impl(
 {
     private val logger: Logger = LoggerFactory.getLogger(TagNFCRepositoryDB2Impl::class.java)
 
-    override fun save(entity: TagNfc): Long
+    override fun saveNewEntity(entity: TagNfc): Long
     {
         val tagNFCId = this.em.unwrap(Session::class.java).save(entity) as Long
         this.logger.info("new tag-nfc #$tagNFCId successfully saved")
@@ -51,4 +52,4 @@ class TagNFCRepositoryDB2Impl(
         this.em.remove(this.findById(entityId))
     }
 
-}
+}*/

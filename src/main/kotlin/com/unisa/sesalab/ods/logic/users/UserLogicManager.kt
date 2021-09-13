@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.logic.users
 
 import com.unisa.sesalab.ods.logic.BasicLogicManager
@@ -78,3 +79,4 @@ data class UserLogicManager<Entity, DataTransferObject>(
     }
 }
 
+*/

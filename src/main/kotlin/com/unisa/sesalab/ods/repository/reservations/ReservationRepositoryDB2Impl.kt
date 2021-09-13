@@ -1,28 +1,23 @@
 package com.unisa.sesalab.ods.repository.reservations
 
-import com.unisa.sesalab.ods.dto.ReservationDTO
 import com.unisa.sesalab.ods.enum.IdType
-import com.unisa.sesalab.ods.model.Asset
 import com.unisa.sesalab.ods.model.Reservation
-import com.unisa.sesalab.ods.model.User
+import com.unisa.sesalab.ods.repository.AbstractDAO
 import org.hibernate.Session
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
 import java.time.OffsetDateTime
-import javax.persistence.EntityManager
 
 @Qualifier("ReservationRepositoryDB2")
 @Repository
 class ReservationRepositoryDB2Impl(
-        @Qualifier(value = "db2EntityManager")
-        private val em: EntityManager
-): ReservationRepository<Reservation, ReservationDTO>
+): AbstractDAO<Reservation, Long>()
 {
     private val logger: Logger = LoggerFactory.getLogger(ReservationRepositoryDB2Impl::class.java)
 
-    override fun save(entity: Reservation): Long
+   /* override fun saveNewEntity(entity: Reservation): Long
     {
         val resId = this.em.unwrap(Session::class.java).save(entity) as Long
         this.logger.info("### reservation #$resId saved successfully")
@@ -61,9 +56,9 @@ class ReservationRepositoryDB2Impl(
     override fun delete(entityId: Long)
     {
         this.em.remove(this.findById(entityId))
-    }
+    }*/
 
-    override fun suspendReservation(entityId: Long): Reservation
+    fun suspendReservation(entityId: Long): Reservation
     {
         val session = this.em.unwrap(Session::class.java) as Session
         val databaseSession = session.sessionFactory.openSession()
@@ -78,7 +73,7 @@ class ReservationRepositoryDB2Impl(
         return reservation
     }
 
-    override fun reservationHistory(from: OffsetDateTime): List<Reservation>
+    fun reservationHistory(from: OffsetDateTime): List<Reservation>
     {
         val session = this.em.unwrap(Session::class.java) as Session
         val cb = session.criteriaBuilder
@@ -92,7 +87,7 @@ class ReservationRepositoryDB2Impl(
         return session.createQuery(criteriaQuery).resultList
     }
 
-    override fun findAllReservationsOverlapsBy(idType: IdType,
+    fun findAllReservationsOverlapsBy(idType: IdType,
                                                id: Long,
                                                start: OffsetDateTime,
                                                end: OffsetDateTime): List<Reservation>

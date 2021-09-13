@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.service
 
 import com.unisa.sesalab.ods.dto.UserDTO
@@ -13,9 +14,10 @@ class UsersService(
         private val userRepository: UserRepository<User, UserDTO>
 )
 {
-    private val userLogicManager: UserLogicManager<User, UserDTO> = UserLogicManager(this.userRepository)
+    //private val userLogicManager: UserLogicManager<User, UserDTO> = UserLogicManager(this.userRepository)
 
-    fun signUpUser(userDTO: UserDTO): Long?
+*/
+/*    fun signUpUser(userDTO: UserDTO): Long?
     {
         return this.userLogicManager.signUpUser(User(userDTO), userDTO.username)
     }
@@ -38,6 +40,7 @@ class UsersService(
     fun findByUsername(username: String): User?
     {
         return this.userLogicManager.findUserByUsername(username)
-    }
+    }*//*
 
-}
+
+}*/

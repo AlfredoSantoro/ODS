@@ -1,11 +1,11 @@
 package com.unisa.sesalab.ods.repository.users
 
-import com.unisa.sesalab.ods.repository.BaseCrudRepository
+import com.unisa.sesalab.ods.model.User
 
 /**
  * User operations
  */
-interface UserRepository<T, K>: BaseCrudRepository<T, K>
+interface UserRepository
 {
-    fun findByUsernameIgnoreCase(username: String): T?
+    fun findByUsernameIgnoreCase(username: String): User?
 }

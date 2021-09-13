@@ -1,12 +1,12 @@
 package com.unisa.sesalab.ods.repository
 
 /**
- * A base crud repository
+ * A Base CRUD Repository
  */
-interface BaseCrudRepository<T, K>
+interface BaseCrudRepository<E, ID>
 {
-    fun save(entity: T): Long
-    fun update(entityId: Long, data: K): T
-    fun findById(entityId: Long): T
-    fun delete(entityId: Long)
+    fun saveNewEntity(entity: E): E
+    fun update(entity: E): E
+    fun findById(entityId: ID): E
+    fun delete(entityId: ID)
 }

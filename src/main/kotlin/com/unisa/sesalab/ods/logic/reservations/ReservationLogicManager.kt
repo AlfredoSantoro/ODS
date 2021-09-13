@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.logic.reservations
 
 import com.unisa.sesalab.ods.dto.ReservationDTO
@@ -43,4 +44,4 @@ class ReservationLogicManager(
             }
         }
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.logic
 
 import com.unisa.sesalab.ods.repository.BaseCrudRepository
@@ -8,7 +9,7 @@ abstract class BasicLogicManager<T, K>(
 {
     protected fun save(entity: T): Long
     {
-        return this.repository.save(entity)
+        return this.repository.saveNewEntity(entity)
     }
 
     protected fun findById(entityId: Long): T
@@ -25,4 +26,4 @@ abstract class BasicLogicManager<T, K>(
     {
         return this.repository.update(entityId, data)
     }
-}
+}*/

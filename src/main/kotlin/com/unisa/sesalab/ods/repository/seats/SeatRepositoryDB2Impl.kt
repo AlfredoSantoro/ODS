@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.repository.seats
 
 import com.unisa.sesalab.ods.dto.SeatDTO
@@ -18,7 +19,7 @@ class SeatRepositoryDB2Impl(
 {
      private val logger: Logger = LoggerFactory.getLogger(SeatRepositoryDB2Impl::class.java)
 
-     override fun save(entity: Seat): Long
+     override fun saveNewEntity(entity: Seat): Long
      {
         val seatId = this.em.unwrap(Session::class.java).save(entity) as Long
         this.logger.info("new seat #$seatId successfully saved")
@@ -51,4 +52,4 @@ class SeatRepositoryDB2Impl(
      {
         this.em.remove(this.findById(entityId))
      }
-}
+}*/

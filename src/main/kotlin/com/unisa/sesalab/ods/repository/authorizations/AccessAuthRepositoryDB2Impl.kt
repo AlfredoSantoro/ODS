@@ -1,3 +1,4 @@
+/*
 package com.unisa.sesalab.ods.repository.authorizations
 
 import com.unisa.sesalab.ods.dto.AccessAuthorizationDTO
@@ -17,7 +18,7 @@ class AccessAuthRepositoryDB2Impl(
 {
     private val logger: Logger = LoggerFactory.getLogger(AccessAuthRepositoryDB2Impl::class.java)
 
-    override fun save(entity: AccessAuthorizations): Long
+    override fun saveNewEntity(entity: AccessAuthorizations): Long
     {
         val accessAuthId = this.em.unwrap(Session::class.java).save(entity) as Long
         this.logger.info("new authorizations #$accessAuthId successfully saved")
@@ -53,4 +54,4 @@ class AccessAuthRepositoryDB2Impl(
         this.em.remove(this.findById(entityId))
     }
 
-}
+}*/
