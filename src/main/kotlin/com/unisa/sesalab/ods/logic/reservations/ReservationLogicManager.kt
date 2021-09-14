@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 class ReservationLogicManager(
         private val reservationRepository: ReservationRepository<Reservation, ReservationDTO>,
         private val reservationRules: ReservationRules
-):BasicLogicManager<Reservation, ReservationDTO>(reservationRepository)
+)
 {
     private val logger: Logger = LoggerFactory.getLogger(ReservationLogicManager::class.java)
 

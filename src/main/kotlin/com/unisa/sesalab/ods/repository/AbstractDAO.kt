@@ -18,7 +18,7 @@ abstract class AbstractDAO<E, ID>: BaseCrudRepository<E, ID>
         this.em.remove(this.findById(entityId))
     }
 
-    override fun saveNewEntity(entity: E): E
+    override fun save(entity: E): E
     {
         this.em.persist(entity)
         return entity
@@ -29,7 +29,7 @@ abstract class AbstractDAO<E, ID>: BaseCrudRepository<E, ID>
         return this.em.merge(entity)
     }
 
-    override fun findById(entityId: ID): E
+    override fun findById(entityId: ID): E?
     {
         return this.em.find(this.entityClass, entityId)
     }

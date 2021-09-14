@@ -1,9 +1,9 @@
 package com.unisa.sesalab.ods
 
-import com.unisa.sesalab.ods.repository.reservations.ReservationRepositoryDB2Impl
-import com.unisa.sesalab.ods.repository.users.UserRepositoryImpl
 //import com.unisa.sesalab.ods.repository.seats.SeatRepositoryDB2Impl
 //import com.unisa.sesalab.ods.repository.tagnfc.TagNFCRepositoryDB2Impl
+import com.unisa.sesalab.ods.repository.reservations.ReservationRepositoryDB2Impl
+import com.unisa.sesalab.ods.repository.users.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
@@ -15,7 +15,7 @@ abstract class BaseTest
     protected lateinit var reservationRepositoryDB2Impl: ReservationRepositoryDB2Impl
 
     @Autowired
-    protected lateinit var userRepositoryImpl: UserRepositoryImpl
+    protected lateinit var userRepositoryImpl: UserRepository
 
    // @Autowired
     //protected lateinit var seatRepositoryDB2Impl: SeatRepositoryDB2Impl

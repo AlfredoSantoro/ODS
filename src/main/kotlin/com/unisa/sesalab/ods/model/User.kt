@@ -1,6 +1,6 @@
 package com.unisa.sesalab.ods.model
 
-import com.unisa.sesalab.ods.dto.UserDTO
+import com.unisa.sesalab.ods.dto.UserInsertUpdateDTO
 import com.unisa.sesalab.ods.enum.UserType
 import org.apache.commons.codec.digest.DigestUtils
 import javax.persistence.*
@@ -22,13 +22,13 @@ class User(
         var encodedPassword: String
 )
 {
-    constructor(userDTO: UserDTO): this(
-            userDTO.name,
-            userDTO.surname,
-            userDTO.userType,
-            userDTO.email,
-            userDTO.username,
-            DigestUtils.sha256Hex(userDTO.plainPassword)
+    constructor(userInsertUpdateDTO: UserInsertUpdateDTO): this(
+            userInsertUpdateDTO.name,
+            userInsertUpdateDTO.surname,
+            userInsertUpdateDTO.userType,
+            userInsertUpdateDTO.email,
+            userInsertUpdateDTO.username,
+            DigestUtils.sha256Hex(userInsertUpdateDTO.plainPassword)
     )
 
     // SOFT DELETE
