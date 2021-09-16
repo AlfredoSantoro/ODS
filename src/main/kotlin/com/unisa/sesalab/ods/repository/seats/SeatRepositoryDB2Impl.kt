@@ -1,55 +1,33 @@
-/*
 package com.unisa.sesalab.ods.repository.seats
 
-import com.unisa.sesalab.ods.dto.SeatDTO
-import com.unisa.sesalab.ods.model.Asset
 import com.unisa.sesalab.ods.model.Seat
-import org.hibernate.Session
+import com.unisa.sesalab.ods.repository.AbstractDAO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
-import javax.persistence.EntityManager
 
 @Repository
-class SeatRepositoryDB2Impl(
-        @Qualifier(value = "db2EntityManager")
-        private val em: EntityManager
-): SeatRepository<Seat, SeatDTO>
+class SeatRepositoryDB2Impl: AbstractDAO<Seat, Long>(), SeatRepository
 {
-     private val logger: Logger = LoggerFactory.getLogger(SeatRepositoryDB2Impl::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(SeatRepositoryDB2Impl::class.java)
 
-     override fun saveNewEntity(entity: Seat): Long
-     {
-        val seatId = this.em.unwrap(Session::class.java).save(entity) as Long
-        this.logger.info("new seat #$seatId successfully saved")
-        return seatId
-     }
+    override fun insertSeat(seat: Seat): Seat
+    {
+        return this.save(seat)
+    }
 
-     override fun update(entityId: Long, data: SeatDTO): Seat
-     {
-        val session = this.em.unwrap(Session::class.java) as Session
-        val databaseSession = session.sessionFactory.openSession()
-        this.logger.info("### begin transaction to update Seats")
-        val tx = databaseSession.beginTransaction()
-        val seat = databaseSession.find(Asset::class.java, entityId) as Seat
-        seat.seatName = data.name
-        seat.seatCanBeBooked = data.canBeBooked
-        databaseSession.flush()
-        tx.commit()
-        databaseSession.close()
-        this.logger.info("### transaction closed to update Seats entity")
-        this.logger.info("### Seats #${seat.id} up to date")
-        return seat
-     }
+    override fun updateSeat(seat: Seat): Seat
+    {
+        return this.updateSeat(seat)
+    }
 
-     override fun findById(entityId: Long): Seat
-     {
-        return this.em.find(Seat::class.java, entityId)
-     }
+    override fun deleteSeat(id: Long)
+    {
+        this.delete(id)
+    }
 
-     override fun delete(entityId: Long)
-     {
-        this.em.remove(this.findById(entityId))
-     }
-}*/
+    override fun findBySeatId(id: Long): Seat?
+    {
+        return this.findById(id)
+    }
+}
