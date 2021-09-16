@@ -7,7 +7,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-class UserServiceTest: BaseTest()
+class UserServiceImplTest: BaseTest()
 {
     @Test
     fun `Should save a new User`()
@@ -15,7 +15,7 @@ class UserServiceTest: BaseTest()
         val user = UserInsertUpdateDTO(null,
                 "nameTest", "surnameTest", UserType.ADMIN,
                 "test@gmail.com", "usertest", "pass")
-        val userSaved = this.userService.signUpUser(user)
+        val userSaved = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(userSaved).isNotNull
         Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
     }
@@ -26,11 +26,11 @@ class UserServiceTest: BaseTest()
         val user = UserInsertUpdateDTO(null,
                 "nameTest", "surnameTest", UserType.ADMIN,
                 "test@gmail.com", "usertest_2", "pass")
-        val userSaved = this.userService.signUpUser(user)
+        val userSaved = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(userSaved).isNotNull
         Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
-        this.userService.deleteUser(userSaved.id!!)
-        Assertions.assertThat(this.userService.findUserById(userSaved.id!!)).isNull()
+        this.userServiceImpl.deleteAccount(userSaved.id!!)
+        Assertions.assertThat(this.userServiceImpl.viewAccount(userSaved.id!!)).isNull()
     }
 
     @Test
@@ -39,10 +39,10 @@ class UserServiceTest: BaseTest()
         val user = UserInsertUpdateDTO(null,
                 "nameTest", "surnameTest", UserType.ADMIN,
                 "test@gmail.com", "usertest_3", "pass")
-        val userSaved = this.userService.signUpUser(user)
+        val userSaved = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(userSaved).isNotNull
         Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
-        val userUpdated = this.userService.updateUser(UserInsertUpdateDTO(userSaved.id, userSaved.name, surname = "usertest_001",
+        val userUpdated = this.userServiceImpl.updateAccount(UserInsertUpdateDTO(userSaved.id, userSaved.name, surname = "usertest_001",
                 userSaved.userType, "newemail@test.it", "newusername_today", plainPassword = "newpass"))
         Assertions.assertThat(userUpdated).isNotNull
         Assertions.assertThat(userUpdated!!.surname).isEqualTo("usertest_001")
@@ -57,9 +57,9 @@ class UserServiceTest: BaseTest()
         val user = UserInsertUpdateDTO(null,
                 "nameTest", "surnameTest", UserType.ADMIN,
                 "test@gmail.com", "usertest_4", "pass")
-        val userSaved = this.userService.signUpUser(user)
+        val userSaved = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(userSaved).isNotNull
         Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
-        Assertions.assertThat(this.userService.findUserByUsername(userSaved.username)).isNotNull
+        Assertions.assertThat(this.userServiceImpl.findUserByUsername(userSaved.username)).isNotNull
     }
 }
