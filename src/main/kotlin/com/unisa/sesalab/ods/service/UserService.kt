@@ -28,4 +28,16 @@ class UserService(
             null
         }
     }
+
+    fun deleteUser(id: Long)
+    {
+        this.userRepository.deleteUser(id)
+        this.logger.info("### user $id deleted successfully")
+    }
+
+    fun findUserById(id: Long): User? { return this.userRepository.findUserById(id) }
+
+    fun findUserByUsername(username: String): User? { return this.userRepository.findByUsernameIgnoreCase(username) }
+
+    fun updateUser(userDTO: UserInsertUpdateDTO): User? { return this.userRepository.updateUser(userDTO) }
 }

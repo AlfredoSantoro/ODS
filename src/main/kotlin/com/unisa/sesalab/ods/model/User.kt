@@ -31,10 +31,6 @@ class User(
             DigestUtils.sha256Hex(userInsertUpdateDTO.plainPassword)
     )
 
-    // SOFT DELETE
-    @Column(nullable = false)
-    var deleted: Boolean = false
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long ? = null

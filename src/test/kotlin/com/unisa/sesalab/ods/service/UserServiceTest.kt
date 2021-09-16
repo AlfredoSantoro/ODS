@@ -1,8 +1,7 @@
-/*
 package com.unisa.sesalab.ods.service
 
 import com.unisa.sesalab.ods.BaseTest
-import com.unisa.sesalab.ods.dto.UserDTO
+import com.unisa.sesalab.ods.dto.UserInsertUpdateDTO
 import com.unisa.sesalab.ods.enum.UserType
 import org.apache.commons.codec.digest.DigestUtils
 import org.assertj.core.api.Assertions
@@ -13,97 +12,54 @@ class UserServiceTest: BaseTest()
     @Test
     fun `Should save a new User`()
     {
-        val userDTO = UserDTO(
-                "NameTest",
-                "SurnameTest",
-                UserType.ADMIN,
-                "test@test.it",
-                "username_test",
-                "password_test"
-        )
-        val userID = this.usersService.signUpUser(userDTO)
-        Assertions.assertThat(userID).isNotNull
-        val userOnDb = this.usersService.findById(userID!!)
-        Assertions.assertThat(userOnDb).isNotNull
-        Assertions.assertThat(userOnDb!!.id).isNotEqualTo(-1)
-        Assertions.assertThat(userOnDb.name).isEqualTo(userDTO.name)
-        Assertions.assertThat(userOnDb.surname).isEqualTo(userDTO.surname)
-        Assertions.assertThat(userOnDb.userType).isEqualTo(userDTO.userType)
-        Assertions.assertThat(userOnDb.email).isEqualTo(userDTO.email)
-        Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
-        Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
-        Assertions.assertThat(userOnDb.encodedPassword).isEqualTo(DigestUtils.sha256Hex(userDTO.plainPassword))
+        val user = UserInsertUpdateDTO(null,
+                "nameTest", "surnameTest", UserType.ADMIN,
+                "test@gmail.com", "usertest", "pass")
+        val userSaved = this.userService.signUpUser(user)
+        Assertions.assertThat(userSaved).isNotNull
+        Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
     }
 
     @Test
-    fun `Should perform a soft delete`()
+    fun `Should delete a user`()
     {
-        val userDTO = UserDTO(
-                "NameTest",
-                "SurnameTest",
-                UserType.ADMIN,
-                "test@test.it",
-                "username_test2",
-                "password_test"
-        )
-        val userID = this.usersService.signUpUser(userDTO)
-        Assertions.assertThat(userID).isNotNull
-        Assertions.assertThat(userID).isNotEqualTo(-1)
-        this.usersService.deleteById(userID!!)
-        val userOnDB = this.usersService.findById(userID)
-        Assertions.assertThat(userOnDB).isNotNull
-        Assertions.assertThat(userOnDB!!.deleted).isTrue
+        val user = UserInsertUpdateDTO(null,
+                "nameTest", "surnameTest", UserType.ADMIN,
+                "test@gmail.com", "usertest_2", "pass")
+        val userSaved = this.userService.signUpUser(user)
+        Assertions.assertThat(userSaved).isNotNull
+        Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
+        this.userService.deleteUser(userSaved.id!!)
+        Assertions.assertThat(this.userService.findUserById(userSaved.id!!)).isNull()
     }
 
     @Test
     fun `Should update an entity`()
     {
-        val userDTO = UserDTO(
-                "NameTest",
-                "SurnameTest",
-                UserType.ADMIN,
-                "test@test.it",
-                "username_test3",
-                "password_test"
-        )
-        val userID = this.usersService.signUpUser(userDTO)
-        Assertions.assertThat(userID).isNotNull
-        val userOnDb = this.usersService.findById(userID!!)
-        Assertions.assertThat(userOnDb).isNotNull
-        Assertions.assertThat(userOnDb!!.id).isNotEqualTo(-1)
-        Assertions.assertThat(userOnDb.name).isEqualTo(userDTO.name)
-        Assertions.assertThat(userOnDb.surname).isEqualTo(userDTO.surname)
-        Assertions.assertThat(userOnDb.userType).isEqualTo(userDTO.userType)
-        Assertions.assertThat(userOnDb.email).isEqualTo(userDTO.email)
-        Assertions.assertThat(userOnDb.username).isEqualTo(userDTO.username)
-        Assertions.assertThat(userOnDb.deleted).isEqualTo(false)
-        Assertions.assertThat(userOnDb.encodedPassword).isEqualTo(DigestUtils.sha256Hex(userDTO.plainPassword))
-        val newUser = UserDTO(userOnDb.name, userOnDb.surname, userOnDb.userType, userOnDb.email, "new-username", "new-password")
-        this.usersService.update(userID, newUser)
-        val newUserOnDB = this.usersService.findById(userID)
-        Assertions.assertThat(newUserOnDB).isNotNull
-        Assertions.assertThat(newUserOnDB!!.username).isEqualTo("new-username")
-        Assertions.assertThat(newUserOnDB.encodedPassword).isEqualTo(DigestUtils.sha256Hex("new-password"))
+        val user = UserInsertUpdateDTO(null,
+                "nameTest", "surnameTest", UserType.ADMIN,
+                "test@gmail.com", "usertest_3", "pass")
+        val userSaved = this.userService.signUpUser(user)
+        Assertions.assertThat(userSaved).isNotNull
+        Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
+        val userUpdated = this.userService.updateUser(UserInsertUpdateDTO(userSaved.id, userSaved.name, surname = "usertest_001",
+                userSaved.userType, "newemail@test.it", "newusername_today", plainPassword = "newpass"))
+        Assertions.assertThat(userUpdated).isNotNull
+        Assertions.assertThat(userUpdated!!.surname).isEqualTo("usertest_001")
+        Assertions.assertThat(userUpdated.email).isEqualTo("newemail@test.it")
+        Assertions.assertThat(userUpdated.username).isEqualTo("newusername_today")
+        Assertions.assertThat(userUpdated.encodedPassword).isEqualTo(DigestUtils.sha256Hex("newpass"))
     }
 
     @Test
     fun `Should find a user by username`()
     {
-        val userDTO = UserDTO(
-                "NameTest",
-                "SurnameTest",
-                UserType.ADMIN,
-                "test@test.it",
-                "username_test4",
-                "password_test"
-        )
-        val userID = this.usersService.signUpUser(userDTO)
-        Assertions.assertThat(userID).isNotNull
-        Assertions.assertThat(userID).isNotEqualTo(-1)
-        val userByUsername = this.usersService.findByUsername(userDTO.username)
-        Assertions.assertThat(userByUsername).isNotNull
-        Assertions.assertThat(userByUsername!!.id).isEqualTo(userID)
-        Assertions.assertThat(userByUsername.username).isEqualTo(userDTO.username)
+        val user = UserInsertUpdateDTO(null,
+                "nameTest", "surnameTest", UserType.ADMIN,
+                "test@gmail.com", "usertest_4", "pass")
+        val userSaved = this.userService.signUpUser(user)
+        Assertions.assertThat(userSaved).isNotNull
+        Assertions.assertThat(userSaved!!.id).isNotEqualTo(-1)
+        Assertions.assertThat(this.userService.findUserByUsername(userSaved.username)).isNotNull
     }
 }
-*/
