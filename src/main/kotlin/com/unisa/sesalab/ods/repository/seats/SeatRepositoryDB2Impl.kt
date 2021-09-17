@@ -30,4 +30,10 @@ class SeatRepositoryDB2Impl: AbstractDAO<Seat, Long>(), SeatRepository
     {
         return this.findById(id)
     }
+
+    override fun findAllSeats(): List<Seat>
+    {
+        val query = this.em.createQuery("select seat from SEAT as seat", Seat::class.java)
+        return query.resultList
+    }
 }

@@ -1,10 +1,8 @@
 package com.unisa.sesalab.ods.dto
 
-data class SeatDTO(
+data class SeatUpdateDTO(
+        val id: Long,
         val name: String,
         val canBeBooked: Boolean,
-        val tagNfcId: Long
+        val tagNFCId: Long
 )
-{
-    var id: Long ?= null
-}

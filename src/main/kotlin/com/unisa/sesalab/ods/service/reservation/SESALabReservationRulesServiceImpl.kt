@@ -1,21 +1,21 @@
-package com.unisa.sesalab.ods.logic.reservations
+package com.unisa.sesalab.ods.service.reservation
 
 import com.unisa.sesalab.ods.exception.ReservationConstraintsException
 import com.unisa.sesalab.ods.model.AccessAuthorizations
 import com.unisa.sesalab.ods.model.OpeningTime
 import com.unisa.sesalab.ods.model.Reservation
+import org.springframework.stereotype.Service
 
-class SESALabReservationRulesImpl(
-        private val reservation: Reservation,
-        private val userAuthorizationsList: List<AccessAuthorizations>,
-        private val seSaLabOpeningTimes: List<OpeningTime>
-): ReservationRules
+@Service
+class SESALabReservationRulesServiceImpl: ReservationRulesService
 {
     @Throws(ReservationConstraintsException::class)
-    override fun validReservation()
+    override fun validReservation(reservation: Reservation,
+                                  userAuthorizationsList: List<AccessAuthorizations>,
+                                  seSaLabOpeningTimes: List<OpeningTime>)
     {
         // Sorting ascending of user authorizations
-        val userAuthorizationsSorted = this.userAuthorizationsList.sortedBy { it.end }
+        val userAuthorizationsSorted = userAuthorizationsList.sortedBy { it.end }
         if ( userAuthorizationsSorted.isNotEmpty() )
         {
             /*
@@ -29,8 +29,8 @@ class SESALabReservationRulesImpl(
                 * Check that the reservation interval is included in the opening times of the laboratory.
                 * If the reservation interval is not included in the laboratory opening times then throws an exception
                  */
-                val openingTime = this.seSaLabOpeningTimes.find { it.dayOfWeek === reservation.start.dayOfWeek }
-                if ( !this.reservationIsIncludedInTheOpeningTimesOfTheLab(openingTime) )
+                val openingTime = seSaLabOpeningTimes.find { it.dayOfWeek === reservation.start.dayOfWeek }
+                if ( !this.reservationIsIncludedInTheOpeningTimesOfTheLab(reservation, openingTime) )
                 {
                     throw ReservationConstraintsException("Cannot create a reservation beyond the lab opening times")
                 }
@@ -46,14 +46,14 @@ class SESALabReservationRulesImpl(
         }
     }
 
-    private fun reservationIsIncludedInTheOpeningTimesOfTheLab(openingTime: OpeningTime?): Boolean
+    private fun reservationIsIncludedInTheOpeningTimesOfTheLab(reservation: Reservation, openingTime: OpeningTime?): Boolean
     {
         return if ( openingTime === null ) false
         else
         {
-            this.reservation.start.toOffsetTime() >= openingTime.open
-                    && this.reservation.start.toOffsetTime() <= openingTime.close
-                    && this.reservation.end.toOffsetTime() <= openingTime.close
+            reservation.start.toOffsetTime() >= openingTime.open
+                    && reservation.start.toOffsetTime() <= openingTime.close
+                    && reservation.end.toOffsetTime() <= openingTime.close
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.unisa.sesalab.ods
 
-import com.unisa.sesalab.ods.repository.reservations.ReservationRepositoryDB2Impl
+import com.unisa.sesalab.ods.repository.reservations.ReservationRepositoryImpl
 import com.unisa.sesalab.ods.repository.users.UserRepository
 import com.unisa.sesalab.ods.service.user.UserServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +12,7 @@ import javax.transaction.Transactional
 abstract class BaseTest
 {
     @Autowired
-    protected lateinit var reservationRepositoryDB2Impl: ReservationRepositoryDB2Impl
+    protected lateinit var reservationRepositoryImpl: ReservationRepositoryImpl
 
     @Autowired
     protected lateinit var userRepositoryImpl: UserRepository

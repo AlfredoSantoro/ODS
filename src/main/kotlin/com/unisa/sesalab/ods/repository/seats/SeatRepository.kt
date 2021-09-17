@@ -8,4 +8,5 @@ interface SeatRepository
     fun updateSeat(seat: Seat): Seat
     fun deleteSeat(id: Long)
     fun findBySeatId(id: Long): Seat?
+    fun findAllSeats(): List<Seat>
 }

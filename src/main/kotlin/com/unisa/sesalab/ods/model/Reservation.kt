@@ -17,17 +17,16 @@ class Reservation(
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = -1
+    val id: Long ? = null
 
     @Column(name = "IN_PAUSE")
     var inPause: Boolean = false
 
     init
     {
-        val today = OffsetDateTime.now()
         if ( this.start >= this.end ) throw IllegalReservationException("Cannot create a reservation because start is after that end")
         if ( this.start.dayOfWeek !== this.end.dayOfWeek ) throw IllegalReservationException("Cannot create a multi-day reservation")
-        if ( this.end < today )
+        if ( this.end.dayOfWeek < OffsetDateTime.now().dayOfWeek )
         {
             throw IllegalReservationException("Cannot create reservations in the past")
         }
