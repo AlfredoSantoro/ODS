@@ -19,29 +19,6 @@ class ReservationLogicManager(
 
     fun createNewReservation(reservation: Reservation): Long
     {
-        // find all reservations overlaps
-        if ( this.reservationRepository.findAllReservationsOverlapsBy(IdType.USER_ID, reservation.user.id, reservation.start, reservation.end).isNotEmpty() )
-        {
-            throw ReservationConstraintsException("user #${reservation.user.id} cannot have two or more reservations at the same time")
-        }
-        else
-        {
-            synchronized(Any()) {
-                // Check that the asset to reserve is available
-                if ( this.reservationRepository.findAllReservationsOverlapsBy(IdType.ASSET_ID, reservation.asset.id, reservation.start, reservation.end).isNotEmpty() )
-                {
-                    throw ReservationConstraintsException("asset #${reservation.asset.id} is reserved")
-                }
-                else
-                {
-                    // validReservation
-                    this.reservationRules.validReservation()
-                    this.logger.info("### saving a new reservation for asset #${reservation.asset.id} and user #${reservation.user.id}")
-                    val resId = this.save(reservation)
-                    this.logger.info("### reservation #$resId saved successfully")
-                    return resId
-                }
-            }
-        }
+
     }
 }*/

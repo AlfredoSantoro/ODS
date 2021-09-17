@@ -14,8 +14,6 @@ import java.time.OffsetDateTime
 @Repository
 class ReservationRepositoryImpl: AbstractDAO<Reservation, Long>(), ReservationRepository
 {
-    private val reservationHistoryDays = 10
-
     private val logger: Logger = LoggerFactory.getLogger(ReservationRepositoryImpl::class.java)
 
     override fun insertReservation(reservation: Reservation) { this.save(reservation) }
@@ -41,9 +39,9 @@ class ReservationRepositoryImpl: AbstractDAO<Reservation, Long>(), ReservationRe
         return session.createQuery(criteriaQuery).resultList
     }
 
-    override fun viewRecentReservations(): List<Reservation>
+    override fun viewRecentReservations(howManyDaysBefore: Int): List<Reservation>
     {
-        val startLimit = OffsetDateTime.now().minusDays(this.reservationHistoryDays.toLong())
+        val startLimit = OffsetDateTime.now().minusDays(howManyDaysBefore.toLong())
         val limitAtStartOfDay = OffsetDateTime.of(startLimit.toLocalDate().atStartOfDay(), startLimit.offset)
         val limitAtEndOfDay = OffsetDateTime.of(LocalDate.now(), LocalTime.of(23, 59), startLimit.offset)
         val session = this.em.unwrap(Session::class.java) as Session

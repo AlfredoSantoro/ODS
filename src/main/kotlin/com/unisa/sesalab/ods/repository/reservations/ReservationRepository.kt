@@ -11,6 +11,6 @@ interface ReservationRepository
     fun deleteReservationById(id :Long)
     fun viewReservation(id: Long): Reservation?
     fun viewReservationsOnGoing(): List<Reservation>
-    fun viewRecentReservations(): List<Reservation>
+    fun viewRecentReservations(howManyDaysBefore: Int): List<Reservation>
     fun findAllReservationsOverlapsBy(idType: IdType, idByFilter: Long, start:OffsetDateTime, end: OffsetDateTime): List<Reservation>
 }

@@ -2,10 +2,10 @@ package com.unisa.sesalab.ods.dto
 
 import java.time.OffsetDateTime
 
-data class ReservationDTO(
+data class ReservationUpdateDTO(
         val name: String,
         val start: OffsetDateTime,
         val end: OffsetDateTime,
-        val userId: Long,
-        val assetId: Long
+        val assetId: Long,
+        val reservationId: Long
 )
