@@ -12,7 +12,8 @@ import org.springframework.stereotype.Service
 @Service
 class AccessAuthorizationsServiceImpl(
         private val accessAuthRepository: AccessAuthRepository,
-        private val userService: UserService
+        private val userService: UserService,
+        private val accessAuthorizationRulesService: AccessAuthorizationRulesService
 ): AccessAuthorizationsService
 {
     private val logger: Logger = LoggerFactory.getLogger(AccessAuthorizationsServiceImpl::class.java)
@@ -27,6 +28,7 @@ class AccessAuthorizationsServiceImpl(
         }
         else
         {
+            this.accessAuthorizationRulesService.checkOverlapsAuthorizations(authorizationInsertDTO.start, authorizationInsertDTO.end)
             val newAuth = AccessAuthorizations(authorizationInsertDTO, authorizationForUser)
             this.accessAuthRepository.insertAuthorization(newAuth)
             return newAuth

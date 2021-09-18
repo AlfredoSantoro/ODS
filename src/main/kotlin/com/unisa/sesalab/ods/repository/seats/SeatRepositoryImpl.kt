@@ -5,11 +5,14 @@ import com.unisa.sesalab.ods.repository.AbstractDAO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import javax.persistence.EntityManager
 
 @Repository
-class SeatRepositoryDB2Impl: AbstractDAO<Seat, Long>(), SeatRepository
+class SeatRepositoryImpl(
+        entityManager: EntityManager
+): AbstractDAO<Seat, Long>(entityManager), SeatRepository
 {
-    private val logger: Logger = LoggerFactory.getLogger(SeatRepositoryDB2Impl::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(SeatRepositoryImpl::class.java)
 
     override fun insertSeat(seat: Seat): Seat
     {

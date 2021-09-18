@@ -1,4 +1,4 @@
-package com.unisa.sesalab.ods.service
+package com.unisa.sesalab.ods.service.asset
 
 import com.unisa.sesalab.ods.model.Asset
 

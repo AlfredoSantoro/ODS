@@ -3,24 +3,33 @@ package com.unisa.sesalab.ods.service.reservation
 import com.unisa.sesalab.ods.dto.ReservationInsertDTO
 import com.unisa.sesalab.ods.dto.ReservationUpdateDTO
 import com.unisa.sesalab.ods.exception.ReservationConstraintsException
+import com.unisa.sesalab.ods.exception.SettingException
 import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
-import com.unisa.sesalab.ods.service.AssetService
+import com.unisa.sesalab.ods.service.asset.AssetService
+import com.unisa.sesalab.ods.service.setting.SettingService
 import com.unisa.sesalab.ods.service.user.UserService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
+import java.time.Duration
 
 @Service
 class ReservationServiceImpl(
         private val reservationRepository: ReservationRepository,
         private val assetService: AssetService,
         private val userService: UserService,
+        private val settingService: SettingService,
         private val reservationRulesService: ReservationRulesService
 ): ReservationService
 {
-    private val reservationHistoryInDays = 10
+    @Value("\${settings.default-names.reservationHistory}")
+    private lateinit var reservationHistorySetting: String
+
+    @Value("\${settings.default-names.reservationDurationHour}")
+    private lateinit var reservationDurationHour: String
+
     private val logger: Logger = LoggerFactory.getLogger(ReservationServiceImpl::class.java)
 
     override fun createReservation(reservationInsertDTO: ReservationInsertDTO)
@@ -29,15 +38,22 @@ class ReservationServiceImpl(
         val user = this.userService.viewAccount(reservationInsertDTO.userId)
         if ( assetToReserve !== null && user !== null )
         {
+            val reservationDurationHourSetting = this.settingService.findByName(this.reservationDurationHour)
+                    ?: throw SettingException("### reservationDurationHourSetting not found")
+
+            val reservationEnd =
+                    reservationInsertDTO.start.plus(reservationDurationHourSetting.value.toLong(),
+                            reservationDurationHourSetting.representationUnit)
+
             // find all reservations overlaps
-            this.reservationRulesService.checkReservationOverlaps(user.id!!, reservationInsertDTO.start, reservationInsertDTO.end)
+            this.reservationRulesService.checkReservationOverlaps(user.id!!, reservationInsertDTO.start, reservationEnd)
 
             synchronized(Any()) {
                 // Check that the asset to reserve is available
-                this.reservationRulesService.checkAssetAvailability(assetToReserve.id!!, reservationInsertDTO.start, reservationInsertDTO.end)
+                this.reservationRulesService.checkAssetAvailability(assetToReserve.id!!, reservationInsertDTO.start, reservationEnd)
                 // validReservation
                 val reservationToSave = Reservation(reservationInsertDTO.name, reservationInsertDTO.start,
-                        reservationInsertDTO.end, user, assetToReserve)
+                        reservationEnd, user, assetToReserve)
                 this.reservationRulesService.checkNewReservation(reservationToSave)
                 this.logger.info("### saving a new reservation for asset #${reservationInsertDTO.assetId} " +
                         "and user #${reservationInsertDTO.userId}")
@@ -57,12 +73,19 @@ class ReservationServiceImpl(
         val reservationToUpdate = this.reservationRepository.viewReservation(reservationUpdateDTO.reservationId)
         if ( assetToReserve !== null && reservationToUpdate !== null )
         {
-            if ( this.isOnGoing(reservationToUpdate.start, reservationToUpdate.end) )
-            {
-                throw ReservationConstraintsException("Cannot update a reservation ongoing")
-            }
-            // find all reservations overlaps
-            this.reservationRulesService.checkReservationOverlaps(assetToReserve.id!!, reservationUpdateDTO.start, reservationUpdateDTO.end)
+            val reservationDurationHourSetting = this.settingService.findByName(this.reservationDurationHour)
+                    ?: throw SettingException("### reservationDurationHourSetting not found")
+
+            val reservationEnd =
+                    reservationUpdateDTO.start.plus(reservationDurationHourSetting.value.toLong(),
+                            reservationDurationHourSetting.representationUnit)
+
+            reservationToUpdate.name = reservationUpdateDTO.name
+            reservationToUpdate.start = reservationUpdateDTO.start
+            reservationToUpdate.end = reservationEnd
+            reservationToUpdate.asset = assetToReserve
+            this.reservationRulesService.checkUpdateReservation(reservationToUpdate)
+            this.reservationRepository.updateReservation(reservationToUpdate)
         }
         else
         {
@@ -80,12 +103,6 @@ class ReservationServiceImpl(
         }
     }
 
-    private fun isOnGoing(start: OffsetDateTime, end: OffsetDateTime): Boolean
-    {
-        val now = OffsetDateTime.now()
-        return (now >= start && now < end)
-    }
-
     override fun pauseReservation(id: Long)
     {
         val res = this.reservationRepository.viewReservation(id)
@@ -95,7 +112,19 @@ class ReservationServiceImpl(
 
     override fun viewReservationDetail(id: Long): Reservation? { return this.reservationRepository.viewReservation(id) }
 
-    override fun reservationsHistory(): List<Reservation> { return this.reservationRepository.viewRecentReservations(this.reservationHistoryInDays) }
+    override fun reservationsHistory(): List<Reservation>
+    {
+        val reservationHistorySetting = this.settingService.findByName(this.reservationHistorySetting)
+        if ( reservationHistorySetting !== null )
+        {
+            return this.reservationRepository.viewRecentReservations(
+                    Duration.of(reservationHistorySetting.value.toLong(), reservationHistorySetting.representationUnit))
+        }
+        else
+        {
+            throw SettingException("### reservationHistorySetting not found")
+        }
+    }
 
     override fun findAllReservationsOnGoing(): List<Reservation> { return this.reservationRepository.viewReservationsOnGoing() }
 }

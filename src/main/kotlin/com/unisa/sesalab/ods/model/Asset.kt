@@ -16,7 +16,7 @@ abstract class Asset(
         protected var canBeBooked: Boolean,
         @Column(name = "ASSET_TYPE", nullable = false)
         @Enumerated(EnumType.STRING)
-        var assetType: AssetType
+        protected var assetType: AssetType
 )
 {
     @Id

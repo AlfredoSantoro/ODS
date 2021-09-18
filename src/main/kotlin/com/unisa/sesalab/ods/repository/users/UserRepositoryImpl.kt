@@ -7,6 +7,7 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import javax.persistence.EntityManager
 import javax.persistence.NoResultException
 
 /**
@@ -14,7 +15,9 @@ import javax.persistence.NoResultException
  */
 
 @Repository
-class UserRepositoryImpl: AbstractDAO<User, Long>(), UserRepository
+class UserRepositoryImpl(
+        entityManager: EntityManager
+): AbstractDAO<User, Long>(entityManager), UserRepository
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryImpl::class.java)
 

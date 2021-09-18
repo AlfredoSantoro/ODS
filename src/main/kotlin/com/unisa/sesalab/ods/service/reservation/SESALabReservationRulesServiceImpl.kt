@@ -2,21 +2,21 @@ package com.unisa.sesalab.ods.service.reservation
 
 import com.unisa.sesalab.ods.enum.IdType
 import com.unisa.sesalab.ods.exception.ReservationConstraintsException
-import com.unisa.sesalab.ods.model.AccessAuthorizations
-import com.unisa.sesalab.ods.model.OpeningTime
+import com.unisa.sesalab.ods.model.PeriodicOpeningTime
 import com.unisa.sesalab.ods.model.Reservation
+import com.unisa.sesalab.ods.repository.authorizations.AccessAuthRepository
+import com.unisa.sesalab.ods.repository.openingtime.OpeningTimeRepository
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
 class SESALabReservationRulesServiceImpl(
-        private val reservationRepository: ReservationRepository
+        private val reservationRepository: ReservationRepository,
+        private val accessAuthRepository: AccessAuthRepository,
+        private val openingTimeRepository: OpeningTimeRepository
 ): ReservationRulesService
 {
-    val userAuthorizationsList: List<AccessAuthorizations> = emptyList()
-    val seSaLabOpeningTimes: List<OpeningTime> = emptyList()
-
     @Throws(ReservationConstraintsException::class)
     override fun checkReservationOverlaps(userId: Long, start: OffsetDateTime, end: OffsetDateTime)
     {
@@ -33,22 +33,16 @@ class SESALabReservationRulesServiceImpl(
     @Throws(ReservationConstraintsException::class)
     override fun checkNewReservation(reservation: Reservation)
     {
-        // Sorting ascending of user authorizations
-        val userAuthorizationsSorted = userAuthorizationsList.sortedBy { it.end }
-        if ( userAuthorizationsSorted.isNotEmpty() )
+        val userAuth = this.accessAuthRepository.findAuthorizationBetween(reservation.start, reservation.end)
+        if ( userAuth !== null )
         {
-            /*
-            * Check that the interval of the reservation is included interval in the time of the latest granted authorization
-            * to access the lab.
-             */
-            val latestAuthorization = userAuthorizationsSorted.last()
-            if ( latestAuthorization.granted )
+            if ( userAuth.granted )
             {
                 /*
                 * Check that the reservation interval is included in the opening times of the laboratory.
                 * If the reservation interval is not included in the laboratory opening times then throws an exception
                  */
-                val openingTime = seSaLabOpeningTimes.find { it.dayOfWeek === reservation.start.dayOfWeek }
+                val openingTime = this.openingTimeRepository.findByDayOfWeek(reservation.start.dayOfWeek)
                 if ( !this.reservationIsIncludedInTheOpeningTimesOfTheLab(reservation, openingTime) )
                 {
                     throw ReservationConstraintsException("Cannot create a reservation beyond the lab opening times")
@@ -56,7 +50,7 @@ class SESALabReservationRulesServiceImpl(
             }
             else
             {
-                throw ReservationConstraintsException("reservation not allowed because the authorization #${latestAuthorization.id} has not been granted")
+                throw ReservationConstraintsException("reservation not allowed because the authorization #${userAuth.id} has not been granted")
             }
         }
         else
@@ -65,23 +59,23 @@ class SESALabReservationRulesServiceImpl(
         }
     }
 
-    private fun reservationIsIncludedInTheOpeningTimesOfTheLab(reservation: Reservation, openingTime: OpeningTime?): Boolean
+    private fun reservationIsIncludedInTheOpeningTimesOfTheLab(reservation: Reservation, periodicOpeningTime: PeriodicOpeningTime?): Boolean
     {
-        return if ( openingTime === null ) false
+        return if ( periodicOpeningTime === null ) false
         else
         {
-            reservation.start.toOffsetTime() >= openingTime.open
-                    && reservation.start.toOffsetTime() <= openingTime.close
-                    && reservation.end.toOffsetTime() <= openingTime.close
+            reservation.start.toOffsetTime() >= periodicOpeningTime.open
+                    && reservation.start.toOffsetTime() <= periodicOpeningTime.close
+                    && reservation.end.toOffsetTime() <= periodicOpeningTime.close
         }
     }
 
     private fun checkReservationsOverlaps(idType: IdType, id: Long, reservationStart: OffsetDateTime,
-                                          reservationEnd: OffsetDateTime
+                                          reservationEnd: OffsetDateTime, excludeReservationId: Long ?= null
     )
     {
         if ( this.reservationRepository.findAllReservationsOverlapsBy(idType, id,
-                        reservationStart, reservationEnd).isNotEmpty())
+                        reservationStart, reservationEnd, excludeReservationId).isNotEmpty())
         {
             val logMessage = if ( idType == IdType.ASSET_ID )
             {
@@ -91,7 +85,19 @@ class SESALabReservationRulesServiceImpl(
         }
     }
 
-    override fun checkUpdateReservation(reservation: Reservation) {
-        TODO("Not yet implemented")
+    override fun checkUpdateReservation(reservation: Reservation)
+    {
+        this.checkReservationsOverlaps(IdType.USER_ID, reservation.user.id!!, reservation.start, reservation.end, reservation.id)
+        this.checkReservationsOverlaps(IdType.ASSET_ID, reservation.asset.id!!, reservation.start, reservation.end, reservation.id)
+        if ( this.isOnGoing(reservation.start, reservation.end) )
+        {
+            throw ReservationConstraintsException("Cannot update a reservation ongoing")
+        }
+    }
+
+    private fun isOnGoing(start: OffsetDateTime, end: OffsetDateTime): Boolean
+    {
+        val now = OffsetDateTime.now()
+        return (now >= start && now < end)
     }
 }

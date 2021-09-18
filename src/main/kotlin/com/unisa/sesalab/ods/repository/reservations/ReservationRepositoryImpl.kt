@@ -3,16 +3,17 @@ package com.unisa.sesalab.ods.repository.reservations
 import com.unisa.sesalab.ods.enum.IdType
 import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.AbstractDAO
-import org.hibernate.Session
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.Duration
 import java.time.OffsetDateTime
+import javax.persistence.EntityManager
 
 @Repository
-class ReservationRepositoryImpl: AbstractDAO<Reservation, Long>(), ReservationRepository
+class ReservationRepositoryImpl(
+        entityManager: EntityManager
+): AbstractDAO<Reservation, Long>(entityManager), ReservationRepository
 {
     private val logger: Logger = LoggerFactory.getLogger(ReservationRepositoryImpl::class.java)
 
@@ -26,56 +27,61 @@ class ReservationRepositoryImpl: AbstractDAO<Reservation, Long>(), ReservationRe
 
     override fun viewReservationsOnGoing(): List<Reservation>
     {
-        val session = this.em.unwrap(Session::class.java) as Session
-        val cb = session.criteriaBuilder
-        val criteriaQuery = cb.createQuery(Reservation::class.java)
-        val root = criteriaQuery.from(Reservation::class.java)
         val now = OffsetDateTime.now()
-        val startPath = root.get<OffsetDateTime>("start")
-        val endPath = root.get<OffsetDateTime>("end")
-        criteriaQuery
-                .select(root)
-                .where(cb.and(cb.lessThanOrEqualTo(startPath, now), cb.greaterThan(endPath, now)))
-        return session.createQuery(criteriaQuery).resultList
+        val startPath = this.root.get<OffsetDateTime>("start")
+        val endPath = this.root.get<OffsetDateTime>("end")
+        this.cq.select(this.root)
+                .where(this.cb.and(this.cb.lessThanOrEqualTo(startPath, now), this.cb.greaterThan(endPath, now)))
+        return this.session.createQuery(this.cq).resultList
     }
 
-    override fun viewRecentReservations(howManyDaysBefore: Int): List<Reservation>
+    override fun viewRecentReservations(duration: Duration): List<Reservation>
     {
-        val startLimit = OffsetDateTime.now().minusDays(howManyDaysBefore.toLong())
-        val limitAtStartOfDay = OffsetDateTime.of(startLimit.toLocalDate().atStartOfDay(), startLimit.offset)
-        val limitAtEndOfDay = OffsetDateTime.of(LocalDate.now(), LocalTime.of(23, 59), startLimit.offset)
-        val session = this.em.unwrap(Session::class.java) as Session
-        val cb = session.criteriaBuilder
-        val criteriaQuery = cb.createQuery(Reservation::class.java)
-        val root = criteriaQuery.from(Reservation::class.java)
-        val startPath = root.get<OffsetDateTime>("start")
-        criteriaQuery
-                .select(root)
-                .where(cb.and(cb.greaterThan(startPath, limitAtStartOfDay), cb.lessThanOrEqualTo(startPath, limitAtEndOfDay)))
-        return session.createQuery(criteriaQuery).resultList
+        val startTime = OffsetDateTime.now().minus(duration)
+
+        val whenStarted = if ( duration.toDays() > 0 )
+        {
+            OffsetDateTime.of(startTime.toLocalDate().atStartOfDay(), startTime.offset)
+        }
+        else
+        {
+            startTime
+        }
+
+        val startPath = this.root.get<OffsetDateTime>("start")
+        this.cq.select(this.root)
+                .where(this.cb.and(this.cb.greaterThan(startPath, whenStarted), this.cb.lessThanOrEqualTo(startPath, OffsetDateTime.now())))
+        return this.session.createQuery(this.cq).resultList
     }
 
-    override fun findAllReservationsOverlapsBy(idType: IdType, idByFilter: Long,
-                                               start: OffsetDateTime,
-                                               end: OffsetDateTime): List<Reservation>
+    override fun findAllReservationsOverlapsBy(idType: IdType, idByFilter: Long, start: OffsetDateTime,
+                                               end: OffsetDateTime, excludeReservationId: Long?): List<Reservation>
     {
         val columnToFilter = when (idType)
         {
             IdType.USER_ID -> "user_id"
             IdType.ASSET_ID -> "asset_id"
         }
-        val session = this.em.unwrap(Session::class.java) as Session
-        val cb = session.criteriaBuilder
-        val criteriaQuery = cb.createQuery(Reservation::class.java)
-        val root = criteriaQuery.from(Reservation::class.java)
-        val idPath = root.get<Long>(columnToFilter)
-        val startPath = root.get<OffsetDateTime>("start")
-        val endPath = root.get<OffsetDateTime>("end")
-        criteriaQuery
-                .select(root)
-                .where(cb.and(cb.equal(idPath, idByFilter),
-                       cb.or(cb.between(startPath, start, end), cb.between(endPath, start, end))
-                ))
-        return session.createQuery(criteriaQuery).resultList
+        val idPath = this.root.get<Long>(columnToFilter)
+        val startPath = this.root.get<OffsetDateTime>("start")
+        val endPath = this.root.get<OffsetDateTime>("end")
+        if ( excludeReservationId !== null )
+        {
+            val reservationPath = this.root.get<Long>("id")
+            this.cq.select(this.root)
+                    .where(this.cb.and(this.cb.equal(idPath, idByFilter), this.cb.notEqual(reservationPath, excludeReservationId),
+                            this.cb.or(this.cb.between(startPath, start, end), this.cb.between(endPath, start, end))
+                    ))
+        }
+        else
+        {
+            this.cq
+                    .select(this.root)
+                    .where(this.cb.and(this.cb.equal(idPath, idByFilter),
+                            this.cb.or(this.cb.between(startPath, start, end), this.cb.between(endPath, start, end))
+                    ))
+        }
+
+        return this.session.createQuery(this.cq).resultList
     }
 }

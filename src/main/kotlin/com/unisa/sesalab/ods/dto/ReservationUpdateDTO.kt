@@ -5,7 +5,6 @@ import java.time.OffsetDateTime
 data class ReservationUpdateDTO(
         val name: String,
         val start: OffsetDateTime,
-        val end: OffsetDateTime,
         val assetId: Long,
         val reservationId: Long
 )

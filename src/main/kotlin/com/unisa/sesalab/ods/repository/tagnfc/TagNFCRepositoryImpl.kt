@@ -5,9 +5,12 @@ import com.unisa.sesalab.ods.repository.AbstractDAO
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import javax.persistence.EntityManager
 
 @Repository
-class TagNFCRepositoryImpl(): AbstractDAO<TagNfc, Long>(), TagNFCRepository
+class TagNFCRepositoryImpl(
+        entityManager: EntityManager
+): AbstractDAO<TagNfc, Long>(entityManager), TagNFCRepository
 {
     private val logger: Logger = LoggerFactory.getLogger(TagNFCRepositoryImpl::class.java)
 
