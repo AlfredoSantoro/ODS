@@ -54,10 +54,29 @@ class ReservationRepositoryImpl(
         return this.session.createQuery(this.cq).resultList
     }
 
-    override fun findAllReservationsOverlapsBy(idType: IdType, idByFilter: Long, start: OffsetDateTime,
-                                               end: OffsetDateTime, excludeReservationId: Long?): List<Reservation>
+    override fun findAllUserReservationsOverlaps(start: OffsetDateTime,
+                                                 end: OffsetDateTime,
+                                                 userId: Long,
+                                                 excludeReservationId: Long?): List<Reservation>
     {
-        val columnToFilter = when (idType)
+        return this.findAllReservationsOverlapsBy(IdType.USER_ID, userId, start, end, excludeReservationId)
+    }
+
+    override fun findAllAssetReservationsOverlaps(start: OffsetDateTime,
+                                                  end: OffsetDateTime,
+                                                  assetId:Long,
+                                                  excludeReservationId: Long?): List<Reservation>
+    {
+        return this.findAllReservationsOverlapsBy(IdType.ASSET_ID, assetId, start, end, excludeReservationId)
+    }
+
+    private fun findAllReservationsOverlapsBy(columnTypeToFilter: IdType,
+                                              columnId: Long,
+                                              start: OffsetDateTime,
+                                               end: OffsetDateTime,
+                                              excludeReservationId: Long?): List<Reservation>
+    {
+        val columnToFilter = when (columnTypeToFilter)
         {
             IdType.USER_ID -> "user_id"
             IdType.ASSET_ID -> "asset_id"
@@ -69,7 +88,7 @@ class ReservationRepositoryImpl(
         {
             val reservationPath = this.root.get<Long>("id")
             this.cq.select(this.root)
-                    .where(this.cb.and(this.cb.equal(idPath, idByFilter), this.cb.notEqual(reservationPath, excludeReservationId),
+                    .where(this.cb.and(this.cb.equal(idPath, columnId), this.cb.notEqual(reservationPath, excludeReservationId),
                             this.cb.or(this.cb.between(startPath, start, end), this.cb.between(endPath, start, end))
                     ))
         }
@@ -77,7 +96,7 @@ class ReservationRepositoryImpl(
         {
             this.cq
                     .select(this.root)
-                    .where(this.cb.and(this.cb.equal(idPath, idByFilter),
+                    .where(this.cb.and(this.cb.equal(idPath, columnId),
                             this.cb.or(this.cb.between(startPath, start, end), this.cb.between(endPath, start, end))
                     ))
         }

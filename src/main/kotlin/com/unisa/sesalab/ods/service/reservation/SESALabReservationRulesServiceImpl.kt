@@ -1,6 +1,5 @@
 package com.unisa.sesalab.ods.service.reservation
 
-import com.unisa.sesalab.ods.enum.IdType
 import com.unisa.sesalab.ods.exception.ReservationConstraintsException
 import com.unisa.sesalab.ods.model.PeriodicOpeningTime
 import com.unisa.sesalab.ods.model.Reservation
@@ -21,13 +20,13 @@ class SESALabReservationRulesServiceImpl(
     override fun checkReservationOverlaps(userId: Long, start: OffsetDateTime, end: OffsetDateTime)
     {
         // find all reservations overlaps by user id
-        this.checkReservationsOverlaps(IdType.USER_ID, userId, start, end)
+        this.checkUserReservationsOverlaps(userId, start, end, null)
     }
     @Throws(ReservationConstraintsException::class)
     override fun checkAssetAvailability(assetID: Long, start: OffsetDateTime, end: OffsetDateTime)
     {
         // find all reservations overlaps by asset id
-        this.checkReservationsOverlaps(IdType.ASSET_ID, assetID, start, end)
+        this.checkAssetReservationsOverlaps(assetID, start, end, null)
     }
 
     @Throws(ReservationConstraintsException::class)
@@ -70,25 +69,30 @@ class SESALabReservationRulesServiceImpl(
         }
     }
 
-    private fun checkReservationsOverlaps(idType: IdType, id: Long, reservationStart: OffsetDateTime,
-                                          reservationEnd: OffsetDateTime, excludeReservationId: Long ?= null
+    private fun checkUserReservationsOverlaps(userId: Long, start: OffsetDateTime, end: OffsetDateTime,
+                                              excludeReservationId: Long ?= null
     )
     {
-        if ( this.reservationRepository.findAllReservationsOverlapsBy(idType, id,
-                        reservationStart, reservationEnd, excludeReservationId).isNotEmpty())
+        if ( this.reservationRepository.findAllUserReservationsOverlaps(start, end, userId, excludeReservationId).isNotEmpty() )
         {
-            val logMessage = if ( idType == IdType.ASSET_ID )
-            {
-                "asset #$id is reserved"
-            } else { "user #$id cannot have two or more reservations at the same time" }
-            throw ReservationConstraintsException(logMessage)
+            throw ReservationConstraintsException("user #$userId cannot have two or more reservations at the same time")
+        }
+    }
+
+    private fun checkAssetReservationsOverlaps(assetID: Long, start: OffsetDateTime,
+                                              end: OffsetDateTime, excludeReservationId: Long ?= null
+    )
+    {
+        if ( this.reservationRepository.findAllAssetReservationsOverlaps(start, end, assetID, excludeReservationId).isNotEmpty() )
+        {
+            throw ReservationConstraintsException("asset #$assetID is reserved")
         }
     }
 
     override fun checkUpdateReservation(reservation: Reservation)
     {
-        this.checkReservationsOverlaps(IdType.USER_ID, reservation.user.id!!, reservation.start, reservation.end, reservation.id)
-        this.checkReservationsOverlaps(IdType.ASSET_ID, reservation.asset.id!!, reservation.start, reservation.end, reservation.id)
+        this.checkUserReservationsOverlaps(reservation.user.id!!, reservation.start, reservation.end, reservation.id)
+        this.checkAssetReservationsOverlaps(reservation.asset.id!!, reservation.start, reservation.end, reservation.id)
         if ( this.isOnGoing(reservation.start, reservation.end) )
         {
             throw ReservationConstraintsException("Cannot update a reservation ongoing")
