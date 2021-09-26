@@ -91,7 +91,7 @@ class SESALabReservationRulesServiceImpl(
 
     override fun checkUpdateReservation(reservation: Reservation)
     {
-        this.checkUserReservationsOverlaps(reservation.user.id!!, reservation.start, reservation.end, reservation.id)
+        this.checkUserReservationsOverlaps(reservation.sesaLabAccount.id!!, reservation.start, reservation.end, reservation.id)
         this.checkAssetReservationsOverlaps(reservation.asset.id!!, reservation.start, reservation.end, reservation.id)
         if ( this.isOnGoing(reservation.start, reservation.end) )
         {

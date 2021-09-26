@@ -1,70 +1,51 @@
 package com.unisa.sesalab.ods.repository.users
 
-import com.unisa.sesalab.ods.dto.UserInsertUpdateDTO
-import com.unisa.sesalab.ods.model.User
+import com.unisa.sesalab.ods.model.SESALabAccount
 import com.unisa.sesalab.ods.repository.AbstractDAO
-import org.apache.commons.codec.digest.DigestUtils
+import development.kit.exception.IllegalAccountException
+import development.kit.user.Account
+import development.kit.user.CreateAccount
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
 import javax.persistence.NoResultException
 
-/**
- *
- */
-
 @Repository
 class UserRepositoryImpl(
         entityManager: EntityManager
-): AbstractDAO<User, Long>(entityManager), UserRepository
+): AbstractDAO<SESALabAccount, Long>(entityManager), UserRepository
 {
     private val logger: Logger = LoggerFactory.getLogger(UserRepositoryImpl::class.java)
 
-    override fun insertUser(userDTO: UserInsertUpdateDTO): User
+    override fun deleteUser(id: Long) { this.delete(id) }
+
+    override fun findAccountById(accountId: Long): Account? { return this.findById(accountId) }
+
+    override fun findAccountByUsername(username: String): Account? { return this.findByUsernameIgnoreCase(username) }
+
+    override fun saveAccount(createAccount: CreateAccount): Account
     {
-        return this.save(User(userDTO))
+        val sesaLabAccount = SESALabAccount(createAccount)
+        val sesaLabAccountSaved = this.save(sesaLabAccount)
+        sesaLabAccountSaved.accountId = sesaLabAccountSaved.id
+        return sesaLabAccountSaved
     }
 
-    override fun updateUser(userDTO: UserInsertUpdateDTO): User?
-    {
-        if ( userDTO.id == null ) return null
-        val user = this.findById(userDTO.id)
-        return if ( user !== null )
-        {
-            user.name = userDTO.name
-            user.surname = userDTO.surname
-            user.username = userDTO.username
-            user.userType = userDTO.userType
-            user.email = userDTO.email
-            user.encodedPassword = DigestUtils.sha256Hex(userDTO.plainPassword)
-            this.update(user)
-        } else null
-    }
+    override fun updateAccount(account: Account): Account { return this.update(SESALabAccount(account)) }
 
-    override fun deleteUser(id: Long)
-    {
-        this.delete(id)
-    }
-
-    override fun findUserById(id: Long): User?
-    {
-        return this.findById(id)
-    }
-
-    override fun findByUsernameIgnoreCase(username: String): User?
+    override fun findByUsernameIgnoreCase(username: String): SESALabAccount
     {
         this.logger.info("### finding user by username #$username")
         return try
         {
-            val query = this.em.createQuery("select u from User as u where lower(u.username)= :username", User::class.java)
+            val query = this.em.createQuery("select u from ACCOUNT as u where lower(u.accountUsername)= :username", SESALabAccount::class.java)
             query.setParameter("username", username.lowercase())
             query.singleResult
         }
         catch (error: NoResultException)
         {
-            null
+            throw IllegalAccountException("account with username #$username not found")
         }
     }
-
 }

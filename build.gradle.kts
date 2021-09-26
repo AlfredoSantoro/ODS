@@ -15,6 +15,14 @@ java.sourceCompatibility = JavaVersion.VERSION_16
 
 repositories {
     mavenCentral()
+    maven {
+        name = "GitHub-Packages-Alfredo-Santoro"
+        url = uri("https://maven.pkg.github.com/AlfredoSantoro/RDK")
+        credentials {
+            username = project.properties["repo_username"] as String
+            password = project.properties["rdk_repo_password"] as String
+        }
+    }
 }
 
 dependencies {
@@ -25,6 +33,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.11")
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.4")
     runtimeOnly("com.ibm.db2.jcc:db2jcc:db2jcc4")
+    implementation("com.alfredosantoro:reservation-development-kit:${project.properties["rdk_version"]}")
 }
 
 tasks.withType<KotlinCompile> {

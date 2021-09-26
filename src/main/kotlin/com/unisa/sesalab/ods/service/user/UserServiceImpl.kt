@@ -1,8 +1,10 @@
 package com.unisa.sesalab.ods.service.user
 
-import com.unisa.sesalab.ods.dto.UserInsertUpdateDTO
-import com.unisa.sesalab.ods.model.User
+import com.unisa.sesalab.ods.model.SESALabAccount
 import com.unisa.sesalab.ods.repository.users.UserRepository
+import development.kit.user.AccountManagerStorage
+import development.kit.user.CreateAccount
+import development.kit.user.UpdateAccount
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -12,32 +14,32 @@ class UserServiceImpl(
         private val userRepository: UserRepository
 ): UserService
 {
+    private val accountManagerStorage = AccountManagerStorage(this.userRepository)
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
-    override fun signUpUser(userInsertUpdateDTO: UserInsertUpdateDTO): User?
+    override fun signUpUser(createAccount: CreateAccount): SESALabAccount
     {
-        return if ( this.userRepository.findByUsernameIgnoreCase(userInsertUpdateDTO.username) == null )
-        {
-            val userSaved = this.userRepository.insertUser(userInsertUpdateDTO)
-            this.logger.info("### user #${userSaved.id} sign up successfully")
-            userSaved
-        }
-        else
-        {
-            this.logger.error("### cannot sign up user ${userInsertUpdateDTO.username} because it already exist")
-            null
-        }
+        val account = this.accountManagerStorage.signUpAccountIfItDoesNotAlreadyExist(createAccount)
+        return SESALabAccount(account)
     }
 
     override fun deleteAccount(userId: Long)
     {
         this.userRepository.deleteUser(userId)
-        this.logger.info("### user $userId deleted successfully")
+        this.logger.info("### account $userId deleted successfully")
     }
 
-    override fun viewAccount(userId: Long): User? { return this.userRepository.findUserById(userId) }
+    override fun viewAccount(userId: Long): SESALabAccount?
+    {
+        val account = this.userRepository.findAccountById(userId)
+        return if ( account == null ) null else SESALabAccount(account)
+    }
 
-    fun findUserByUsername(username: String): User? { return this.userRepository.findByUsernameIgnoreCase(username) }
+    fun findUserByUsername(username: String): SESALabAccount? { return this.userRepository.findByUsernameIgnoreCase(username) }
 
-    override fun updateAccount(userInsertUpdateDTO: UserInsertUpdateDTO): User? { return this.userRepository.updateUser(userInsertUpdateDTO) }
+    override fun updateAccount(updateAccount: UpdateAccount): SESALabAccount
+    {
+        val accountUpdated = this.accountManagerStorage.findAccountUpdateAndStoreIt(updateAccount)
+        return SESALabAccount(accountUpdated)
+    }
 }

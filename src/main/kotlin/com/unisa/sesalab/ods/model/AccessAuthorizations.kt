@@ -10,15 +10,15 @@ class AccessAuthorizations(
         var end: OffsetDateTime,
         var reason: String,
         @ManyToOne(fetch = FetchType.LAZY)
-        val user: User
+        val sesaLabAccount: SESALabAccount
 )
 {
     constructor(accessAuthorizationInsertDTO: AccessAuthorizationInsertDTO,
-                user: User): this(
+                sesaLabAccount: SESALabAccount): this(
             accessAuthorizationInsertDTO.start,
             accessAuthorizationInsertDTO.end,
             accessAuthorizationInsertDTO.reason,
-            user
+            sesaLabAccount
     )
 
     var granted = false

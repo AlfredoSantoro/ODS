@@ -6,12 +6,12 @@ import javax.persistence.*
 
 @Entity
 class Reservation(
-        var name: String,
-        var start: OffsetDateTime,
-        var end: OffsetDateTime,
-        @ManyToOne(fetch = FetchType.LAZY)
-        var user: User,
-        @ManyToOne(fetch = FetchType.LAZY)
+    var name: String,
+    var start: OffsetDateTime,
+    var end: OffsetDateTime,
+    @ManyToOne(fetch = FetchType.LAZY)
+        var sesaLabAccount: SESALabAccount,
+    @ManyToOne(fetch = FetchType.LAZY)
         var asset: Asset
 )
 {
