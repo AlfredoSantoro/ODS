@@ -5,6 +5,7 @@ import com.unisa.sesalab.ods.repository.users.UserRepository
 import development.kit.user.AccountManagerStorage
 import development.kit.user.CreateAccount
 import development.kit.user.UpdateAccount
+import development.kit.utils.PasswordManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ class UserServiceImpl(
 
     override fun signUpUser(createAccount: CreateAccount): SESALabAccount
     {
+        createAccount.password = PasswordManager.encodePassword(createAccount.password)
         val account = this.accountManagerStorage.signUpAccountIfItDoesNotAlreadyExist(createAccount)
         return SESALabAccount(account)
     }
@@ -39,6 +41,7 @@ class UserServiceImpl(
 
     override fun updateAccount(updateAccount: UpdateAccount): SESALabAccount
     {
+        updateAccount.password = PasswordManager.encodePassword(updateAccount.password)
         val accountUpdated = this.accountManagerStorage.findAccountUpdateAndStoreIt(updateAccount)
         return SESALabAccount(accountUpdated)
     }

@@ -2,7 +2,6 @@ package com.unisa.sesalab.ods.repository.users
 
 import com.unisa.sesalab.ods.model.SESALabAccount
 import com.unisa.sesalab.ods.repository.AbstractDAO
-import development.kit.exception.IllegalAccountException
 import development.kit.user.Account
 import development.kit.user.CreateAccount
 import org.slf4j.Logger
@@ -32,9 +31,12 @@ class UserRepositoryImpl(
         return sesaLabAccountSaved
     }
 
-    override fun updateAccount(account: Account): Account { return this.update(SESALabAccount(account)) }
+    override fun updateAccount(account: Account): Account {
+        val res = this.update(SESALabAccount(account))
+        return res
+    }
 
-    override fun findByUsernameIgnoreCase(username: String): SESALabAccount
+    override fun findByUsernameIgnoreCase(username: String): SESALabAccount?
     {
         this.logger.info("### finding user by username #$username")
         return try
@@ -45,7 +47,8 @@ class UserRepositoryImpl(
         }
         catch (error: NoResultException)
         {
-            throw IllegalAccountException("account with username #$username not found")
+            this.logger.info("account with username #$username not found")
+            null
         }
     }
 }

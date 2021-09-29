@@ -31,7 +31,7 @@ class SESALabAccount(
         createAccount.accountType,
         createAccount.email,
         createAccount.username,
-        createAccount.decodedPassword
+        createAccount.password
     )
 
     constructor(account: Account): this(
@@ -43,11 +43,6 @@ class SESALabAccount(
         account.password,
         account.accountId
     )
-
-    init
-    {
-        this.encodedPassword = this.password
-    }
 
     override fun toString(): String
     {

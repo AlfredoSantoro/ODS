@@ -4,7 +4,7 @@ import com.unisa.sesalab.ods.BaseTest
 import development.kit.user.AccountType
 import development.kit.user.CreateAccount
 import development.kit.user.UpdateAccount
-import org.apache.commons.codec.digest.DigestUtils
+import development.kit.utils.PasswordManager
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -18,6 +18,7 @@ class SESALabAccountServiceImplTest: BaseTest()
         val seSaLabAccount = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
+        Assertions.assertThat(seSaLabAccount.password).isEqualTo(PasswordManager.encodePassword("lamiapass"))
     }
 
     @Test
@@ -28,6 +29,7 @@ class SESALabAccountServiceImplTest: BaseTest()
         val seSaLabAccount = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
+        Assertions.assertThat(seSaLabAccount.password).isEqualTo(PasswordManager.encodePassword("lamiapass"))
         this.userServiceImpl.deleteAccount(seSaLabAccount.id!!)
         Assertions.assertThat(this.userServiceImpl.viewAccount(seSaLabAccount.id!!)).isNull()
     }
@@ -40,6 +42,7 @@ class SESALabAccountServiceImplTest: BaseTest()
         val seSaLabAccount = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
+        Assertions.assertThat(seSaLabAccount.password).isEqualTo(PasswordManager.encodePassword("lamiapass"))
 
         val userUpdated = this.userServiceImpl.updateAccount(
             UpdateAccount(seSaLabAccount.accountId!!, seSaLabAccount.name, surname = "usertest_001",
@@ -49,7 +52,7 @@ class SESALabAccountServiceImplTest: BaseTest()
         Assertions.assertThat(userUpdated.surname).isEqualTo("usertest_001")
         Assertions.assertThat(userUpdated.email).isEqualTo("newemail@test.it")
         Assertions.assertThat(userUpdated.username).isEqualTo("newusername_today")
-        Assertions.assertThat(userUpdated.encodedPassword).isEqualTo(DigestUtils.sha256Hex("newpass"))
+        Assertions.assertThat(userUpdated.encodedPassword).isEqualTo(PasswordManager.encodePassword("newpass"))
     }
 
     @Test
@@ -60,6 +63,7 @@ class SESALabAccountServiceImplTest: BaseTest()
         val seSaLabAccount = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
+        Assertions.assertThat(seSaLabAccount.password).isEqualTo(PasswordManager.encodePassword("lamiapass"))
         Assertions.assertThat(this.userServiceImpl.findUserByUsername(seSaLabAccount.username)).isNotNull
     }
 }

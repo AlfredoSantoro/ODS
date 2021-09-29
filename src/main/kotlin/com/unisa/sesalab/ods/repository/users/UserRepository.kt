@@ -6,5 +6,5 @@ import development.kit.user.IStorage
 interface UserRepository: IStorage
 {
     fun deleteUser(id: Long)
-    fun findByUsernameIgnoreCase(username: String): SESALabAccount
+    fun findByUsernameIgnoreCase(username: String): SESALabAccount?
 }
