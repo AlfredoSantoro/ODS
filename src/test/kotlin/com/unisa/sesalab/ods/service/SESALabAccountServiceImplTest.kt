@@ -64,6 +64,8 @@ class SESALabAccountServiceImplTest: BaseTest()
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
         Assertions.assertThat(seSaLabAccount.password).isEqualTo(PasswordManager.encodePassword("lamiapass"))
-        Assertions.assertThat(this.userServiceImpl.findUserByUsername(seSaLabAccount.username)).isNotNull
+        val accountFounded = this.userServiceImpl.findUserByUsername(seSaLabAccount.username)
+        Assertions.assertThat(accountFounded).isNotNull
+        Assertions.assertThat(accountFounded!!.username).isEqualTo(user.username)
     }
 }

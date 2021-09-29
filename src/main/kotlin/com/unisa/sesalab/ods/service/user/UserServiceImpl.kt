@@ -18,10 +18,19 @@ class UserServiceImpl(
     private val accountManagerStorage = AccountManagerStorage(this.userRepository)
     private val logger: Logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
+    /**
+     * Registra un nuovo account codificando la password con l'algoritmo SHA-256.
+     * @param createAccount rappresenta i dati del nuovo account.
+     * @return @SESALabAccount è l'entità resa persistente nella rispettiva tabella (ACCOUNT).
+     */
     override fun signUpUser(createAccount: CreateAccount): SESALabAccount
     {
+        // 1. codifica password
         createAccount.password = PasswordManager.encodePassword(createAccount.password)
+
+        // 2. registra account se e soltanto se non esso non esiste già
         val account = this.accountManagerStorage.signUpAccountIfItDoesNotAlreadyExist(createAccount)
+
         return SESALabAccount(account)
     }
 
