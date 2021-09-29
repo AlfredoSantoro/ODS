@@ -46,7 +46,7 @@ class UserServiceImpl(
         return if ( account == null ) null else SESALabAccount(account)
     }
 
-    fun findUserByUsername(username: String): SESALabAccount? { return this.userRepository.findByUsernameIgnoreCase(username) }
+    override fun findUserByUsername(username: String): SESALabAccount? { return this.userRepository.findByUsernameIgnoreCase(username) }
 
     override fun updateAccount(updateAccount: UpdateAccount): SESALabAccount
     {

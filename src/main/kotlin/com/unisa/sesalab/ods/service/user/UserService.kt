@@ -10,4 +10,5 @@ interface UserService
     fun viewAccount(userId: Long): SESALabAccount?
     fun updateAccount(updateAccount: UpdateAccount): SESALabAccount
     fun deleteAccount(userId: Long)
+    fun findUserByUsername(username: String): SESALabAccount?
 }
