@@ -1,34 +1,29 @@
 package com.unisa.sesalab.ods.model
 
-import com.unisa.sesalab.ods.exception.IllegalReservationException
+import development.kit.reservation.SeatsReservationWithPause
 import java.time.OffsetDateTime
 import javax.persistence.*
 
 @Entity
 class Reservation(
-    var name: String,
-    var start: OffsetDateTime,
-    var end: OffsetDateTime,
+    var reservationName: String,
+    var reservationStart: OffsetDateTime,
+    var reservationEnd: OffsetDateTime,
     @ManyToOne(fetch = FetchType.LAZY)
-        var sesaLabAccount: SESALabAccount,
+    var sesaLabAccount: SESALabAccount,
     @ManyToOne(fetch = FetchType.LAZY)
-        var asset: Asset
-)
+    var seatReserved: Seat,
+    @Column(name = "IN_PAUSE")
+    var paused: Boolean = false
+): SeatsReservationWithPause(reservationName, reservationStart, reservationEnd, seatReserved, sesaLabAccount, paused)
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long ? = null
 
-    @Column(name = "IN_PAUSE")
-    var inPause: Boolean = false
-
-    init
-    {
-        if ( this.start >= this.end ) throw IllegalReservationException("Cannot create a reservation because start is after that end")
-        if ( this.start.dayOfWeek !== this.end.dayOfWeek ) throw IllegalReservationException("Cannot create a multi-day reservation")
-        if ( this.end.dayOfWeek < OffsetDateTime.now().dayOfWeek )
-        {
-            throw IllegalReservationException("Cannot create reservations in the past")
-        }
+    override fun toString(): String {
+        return "Reservation(reservationName='$reservationName', reservationStart=$reservationStart, " +
+                "reservationEnd=$reservationEnd, sesaLabAccount=$sesaLabAccount, seatReserved=$seatReserved," +
+                " paused=$paused, id=$id)"
     }
 }

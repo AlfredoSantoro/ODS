@@ -64,6 +64,8 @@ class SeatServiceImpl(
         }
     }
 
+    override fun findById(id: Long): Seat? { return this.seatRepository.findBySeatId(id) }
+
     override fun findAllSeats(): List<Seat>
     {
         return this.seatRepository.findAllSeats()

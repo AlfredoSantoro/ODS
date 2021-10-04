@@ -9,5 +9,6 @@ interface SeatService
     fun createSeat(seatDTO: SeatInsertDTO): Seat?
     fun deleteSeat(id: Long)
     fun updateSeat(seatUpdateDTO: SeatUpdateDTO): Seat?
+    fun findById(id: Long): Seat?
     fun findAllSeats(): List<Seat>
 }

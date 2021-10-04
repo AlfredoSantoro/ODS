@@ -6,7 +6,7 @@ import com.unisa.sesalab.ods.exception.ReservationConstraintsException
 import com.unisa.sesalab.ods.exception.SettingException
 import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
-import com.unisa.sesalab.ods.service.asset.AssetService
+import com.unisa.sesalab.ods.service.seat.SeatService
 import com.unisa.sesalab.ods.service.setting.SettingService
 import com.unisa.sesalab.ods.service.user.UserService
 import org.slf4j.Logger
@@ -18,7 +18,7 @@ import java.time.Duration
 @Service
 class ReservationServiceImpl(
         private val reservationRepository: ReservationRepository,
-        private val assetService: AssetService,
+        private val seatService: SeatService,
         private val userService: UserService,
         private val settingService: SettingService,
         private val reservationRulesService: ReservationRulesService
@@ -34,7 +34,7 @@ class ReservationServiceImpl(
 
     override fun createReservation(reservationInsertDTO: ReservationInsertDTO)
     {
-        val assetToReserve = this.assetService.findAssetById(reservationInsertDTO.assetId)
+        val assetToReserve = this.seatService.findById(reservationInsertDTO.seatId)
         val user = this.userService.viewAccount(reservationInsertDTO.userId)
         if ( assetToReserve !== null && user !== null )
         {
@@ -55,7 +55,7 @@ class ReservationServiceImpl(
                 val reservationToSave = Reservation(reservationInsertDTO.name, reservationInsertDTO.start,
                         reservationEnd, user, assetToReserve)
                 this.reservationRulesService.checkNewReservation(reservationToSave)
-                this.logger.info("### saving a new reservation for asset #${reservationInsertDTO.assetId} " +
+                this.logger.info("### saving a new reservation for asset #${reservationInsertDTO.seatId} " +
                         "and user #${reservationInsertDTO.userId}")
                 this.reservationRepository.insertReservation(reservationToSave)
                 this.logger.info("### asset #${assetToReserve.id} reserved by user ${user.id}")
@@ -69,7 +69,7 @@ class ReservationServiceImpl(
 
     override fun updateReservation(reservationUpdateDTO: ReservationUpdateDTO)
     {
-        val assetToReserve = this.assetService.findAssetById(reservationUpdateDTO.assetId)
+        val assetToReserve = this.seatService.findById(reservationUpdateDTO.seatId)
         val reservationToUpdate = this.reservationRepository.viewReservation(reservationUpdateDTO.reservationId)
         if ( assetToReserve !== null && reservationToUpdate !== null )
         {
@@ -80,10 +80,10 @@ class ReservationServiceImpl(
                     reservationUpdateDTO.start.plus(reservationDurationHourSetting.value.toLong(),
                             reservationDurationHourSetting.representationUnit)
 
-            reservationToUpdate.name = reservationUpdateDTO.name
-            reservationToUpdate.start = reservationUpdateDTO.start
-            reservationToUpdate.end = reservationEnd
-            reservationToUpdate.asset = assetToReserve
+            reservationToUpdate.reservationName = reservationUpdateDTO.name
+            reservationToUpdate.reservationStart = reservationUpdateDTO.start
+            reservationToUpdate.reservationEnd = reservationEnd
+            reservationToUpdate.seatReserved = assetToReserve
             this.reservationRulesService.checkUpdateReservation(reservationToUpdate)
             this.reservationRepository.updateReservation(reservationToUpdate)
         }
