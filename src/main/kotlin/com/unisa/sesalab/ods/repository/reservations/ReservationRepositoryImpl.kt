@@ -28,8 +28,8 @@ class ReservationRepositoryImpl(
     override fun viewReservationsOnGoing(): List<Reservation>
     {
         val now = OffsetDateTime.now()
-        val startPath = this.root.get<OffsetDateTime>("start")
-        val endPath = this.root.get<OffsetDateTime>("end")
+        val startPath = this.root.get<OffsetDateTime>("reservationStart")
+        val endPath = this.root.get<OffsetDateTime>("reservationEnd")
         this.cq.select(this.root)
                 .where(this.cb.and(this.cb.lessThanOrEqualTo(startPath, now), this.cb.greaterThan(endPath, now)))
         return this.session.createQuery(this.cq).resultList
