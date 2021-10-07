@@ -29,7 +29,7 @@ class UserServiceImpl(
         createAccount.password = PasswordManager.encodePassword(createAccount.password)
 
         // 2. registra account se e soltanto se non esso non esiste già
-        val account = this.accountManagerStorage.signUpAccountIfItDoesNotAlreadyExist(createAccount)
+        val account = this.accountManagerStorage.signUpANewAccount(createAccount)
 
         return SESALabAccount(account)
     }
@@ -51,7 +51,7 @@ class UserServiceImpl(
     override fun updateAccount(updateAccount: UpdateAccount): SESALabAccount
     {
         updateAccount.password = PasswordManager.encodePassword(updateAccount.password)
-        val accountUpdated = this.accountManagerStorage.findAccountUpdateAndStoreIt(updateAccount)
+        val accountUpdated = this.accountManagerStorage.updateAnExistingAccountAndStoreIt(updateAccount)
         return SESALabAccount(accountUpdated)
     }
 }
