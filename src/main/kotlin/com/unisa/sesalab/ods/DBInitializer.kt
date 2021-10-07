@@ -2,10 +2,8 @@ package com.unisa.sesalab.ods
 
 import com.unisa.sesalab.ods.dto.SeatInsertDTO
 import com.unisa.sesalab.ods.dto.TagNfcDTO
-import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.model.Seat
 import com.unisa.sesalab.ods.model.TagNfc
-import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
 import com.unisa.sesalab.ods.service.seat.SeatService
 import com.unisa.sesalab.ods.service.tagnfc.TagNFCService
 import com.unisa.sesalab.ods.service.user.UserService
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import java.time.OffsetDateTime
 import java.util.*
 
 @Component
@@ -25,7 +22,6 @@ class DBInitializer(
     private val userService: UserService,
     private val seatsService: SeatService,
     private val tagNFCService: TagNFCService,
-    private val reservationRepo: ReservationRepository,
     @Value("\${spring.jpa.hibernate.ddl-auto}")
     private val dbInitType: String
 ): CommandLineRunner
@@ -41,9 +37,6 @@ class DBInitializer(
         {
             this.initUsers()
             this.initSeats()
-            this.reservationRepo.insertReservation(Reservation("myReserv", OffsetDateTime.now(),
-            OffsetDateTime.now().plusHours(1), this.userService.findUserByUsername("a.santoro73")!!,
-            this.seats.first()))
         }
     }
 
