@@ -4,11 +4,14 @@ import com.unisa.sesalab.ods.dto.ReservationInsertDTO
 import com.unisa.sesalab.ods.dto.ReservationUpdateDTO
 import com.unisa.sesalab.ods.exception.ReservationConstraintsException
 import com.unisa.sesalab.ods.exception.SettingException
+import com.unisa.sesalab.ods.factory.AccountFactory
+import com.unisa.sesalab.ods.factory.AssetFactory
 import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
 import com.unisa.sesalab.ods.service.seat.SeatService
 import com.unisa.sesalab.ods.service.setting.SettingService
 import com.unisa.sesalab.ods.service.user.UserService
+import development.kit.reservation.ReservationManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -32,6 +35,8 @@ class ReservationServiceImpl(
 
     private val logger: Logger = LoggerFactory.getLogger(ReservationServiceImpl::class.java)
 
+    private val reservationManager = ReservationManager(this.reservationRulesService)
+
     override fun createReservation(reservationInsertDTO: ReservationInsertDTO)
     {
         /*
@@ -42,6 +47,7 @@ class ReservationServiceImpl(
             5) Check Autorizzazione
             6) Salva
          */
+
         val assetToReserve = this.seatService.findById(reservationInsertDTO.seatId)
         val user = this.userService.viewAccount(reservationInsertDTO.userId)
         if ( assetToReserve !== null && user !== null )
@@ -54,11 +60,19 @@ class ReservationServiceImpl(
                             reservationDurationHourSetting.representationUnit)
 
             // find all reservations overlaps
-            this.reservationRulesService.checkReservationOverlaps(user.id!!, reservationInsertDTO.start, reservationEnd)
+            // this.reservationRulesService.checkReservationOverlaps(user.id!!, reservationInsertDTO.start, reservationEnd)
 
             synchronized(Any()) {
                 // Check that the asset to reserve is available
-                this.reservationRulesService.checkAssetAvailability(assetToReserve.id!!, reservationInsertDTO.start, reservationEnd)
+                this.reservationManager.createReservation(AccountFactory.createAccount(user), reservationInsertDTO.start,
+                    Duration.of(
+                        reservationDurationHourSetting.value.toLong(),
+                        reservationDurationHourSetting.representationUnit),
+                        AssetFactory.createAsset(assetToReserve)
+                )
+
+
+                // this.reservationRulesService.checkAssetAvailability(assetToReserve.id!!, reservationInsertDTO.start, reservationEnd)
                 // validReservation
                 val reservationToSave = Reservation(reservationInsertDTO.name, reservationInsertDTO.start,
                         reservationEnd, user, assetToReserve)

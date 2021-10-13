@@ -6,6 +6,8 @@ import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.authorizations.AccessAuthRepository
 import com.unisa.sesalab.ods.repository.openingtime.OpeningTimeRepository
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
+import development.kit.asset.Asset
+import development.kit.user.Account
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
@@ -16,19 +18,6 @@ class SESALabReservationRulesServiceImpl(
         private val openingTimeRepository: OpeningTimeRepository
 ): ReservationRulesService
 {
-    @Throws(ReservationConstraintsException::class)
-    override fun checkReservationOverlaps(userId: Long, start: OffsetDateTime, end: OffsetDateTime)
-    {
-        // find all reservations overlaps by user id
-        this.checkUserReservationsOverlaps(userId, start, end, null)
-    }
-    @Throws(ReservationConstraintsException::class)
-    override fun checkAssetAvailability(assetID: Long, start: OffsetDateTime, end: OffsetDateTime)
-    {
-        // find all reservations overlaps by asset id
-        this.checkAssetReservationsOverlaps(assetID, start, end, null)
-    }
-
     @Throws(ReservationConstraintsException::class)
     override fun checkNewReservation(reservation: Reservation)
     {
@@ -69,35 +58,39 @@ class SESALabReservationRulesServiceImpl(
         }
     }
 
-    private fun checkUserReservationsOverlaps(userId: Long, start: OffsetDateTime, end: OffsetDateTime,
-                                              excludeReservationId: Long ?= null
-    )
+    private fun isUserReservationsOverlaps(userId: Long, start: OffsetDateTime, end: OffsetDateTime,
+                                              excludeReservationId: Long ?= null): Boolean
     {
-        if ( this.reservationRepository.findAllUserReservationsOverlaps(start, end, userId, excludeReservationId).isNotEmpty() )
-        {
-            throw ReservationConstraintsException("user #$userId cannot have two or more reservations at the same time")
-        }
+        return this.reservationRepository.findAllUserReservationsOverlaps(start, end, userId, excludeReservationId).isNotEmpty()
     }
 
-    private fun checkAssetReservationsOverlaps(assetID: Long, start: OffsetDateTime,
-                                              end: OffsetDateTime, excludeReservationId: Long ?= null
-    )
+    private fun isAssetReservationsOverlaps(assetID: Long, start: OffsetDateTime,
+                                            end: OffsetDateTime, excludeReservationId: Long ?= null): Boolean
     {
-        if ( this.reservationRepository.findAllAssetReservationsOverlaps(start, end, assetID, excludeReservationId).isNotEmpty() )
-        {
-            throw ReservationConstraintsException("asset #$assetID is reserved")
-        }
+        return this.reservationRepository.findAllAssetReservationsOverlaps(start, end, assetID, excludeReservationId).isNotEmpty()
     }
 
     override fun checkUpdateReservation(reservation: Reservation)
     {
-        this.checkUserReservationsOverlaps(reservation.account.id!!, reservation.start, reservation.end, reservation.id)
-        this.checkAssetReservationsOverlaps(reservation.seatReserved.id!!, reservation.start, reservation.end, reservation.id)
+        this.isUserReservationsOverlaps(reservation.account.id!!, reservation.start, reservation.end, reservation.id)
+        this.isAssetReservationsOverlaps(reservation.seatReserved.id!!, reservation.start, reservation.end, reservation.id)
         if ( this.isOnGoing(reservation.start, reservation.end) )
         {
             throw ReservationConstraintsException("Cannot update a reservation ongoing")
         }
     }
+
+    override fun isAssetAvailable(
+        asset: Asset,
+        startReservation: OffsetDateTime,
+        endReservation: OffsetDateTime
+    ): Boolean { return !(this.isAssetReservationsOverlaps(asset.assetId!!, startReservation, endReservation)) }
+
+    override fun isOverlappingUserReservations(
+        account: Account,
+        startReservation: OffsetDateTime,
+        endReservation: OffsetDateTime
+    ): Boolean { return !(this.isUserReservationsOverlaps(account.accountId!!, startReservation, endReservation)) }
 
     private fun isOnGoing(start: OffsetDateTime, end: OffsetDateTime): Boolean
     {
