@@ -7,24 +7,22 @@ import javax.persistence.*
 
 @Entity(name = "ACCOUNT")
 class SESALabAccount(
-        @Column(name = "NAME", nullable = false)
-        var accountName: String,
-        @Column(name = "SURNAME", nullable = false)
-        var accountSurname: String,
-        @Column(name = "ACCOUNT_TYPE", nullable = false)
-        @Enumerated(EnumType.STRING)
-        var userType: AccountType,
-        @Column(name = "EMAIL", nullable = false)
-        var accountEmail: String,
-        @Column(name = "USERNAME", nullable = false, unique = true)
-        var accountUsername: String,
-        @Column(name = "PASSWORD", nullable = false)
-        var encodedPassword: String,
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Long ? = null
-): Account(accountName, accountSurname, accountEmail, accountUsername, encodedPassword, userType, id)
+    var name: String,
+    var surname: String,
+    @Column(name = "ACCOUNT_TYPE", nullable = false)
+    @Enumerated(EnumType.STRING)
+    var userType: AccountType,
+    var email: String,
+    @Column(name = "USERNAME", nullable = false, unique = true)
+    var username: String,
+    @Column(name = "PASSWORD", nullable = false)
+    var encodedPassword: String,
+)
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long ? = null
+
     constructor(createAccount: CreateAccount) : this(
         createAccount.name,
         createAccount.surname,
@@ -40,8 +38,7 @@ class SESALabAccount(
         account.accountType,
         account.email,
         account.username,
-        account.password,
-        account.accountId
+        account.password
     )
 
     override fun toString(): String

@@ -34,6 +34,14 @@ class ReservationServiceImpl(
 
     override fun createReservation(reservationInsertDTO: ReservationInsertDTO)
     {
+        /*
+            1) controlla l'esistenza del posto che deve essere prenotato e dell'utente
+            2) ottiene la durata della prenotazione (parametro)
+            3) controlla se ci sono prenotazioni dell'utente che si sovrappongono in quella fascia oraria
+            4) controlla se l'asset è disponibile
+            5) Check Autorizzazione
+            6) Salva
+         */
         val assetToReserve = this.seatService.findById(reservationInsertDTO.seatId)
         val user = this.userService.viewAccount(reservationInsertDTO.userId)
         if ( assetToReserve !== null && user !== null )
@@ -80,9 +88,9 @@ class ReservationServiceImpl(
                     reservationUpdateDTO.start.plus(reservationDurationHourSetting.value.toLong(),
                             reservationDurationHourSetting.representationUnit)
 
-            reservationToUpdate.reservationName = reservationUpdateDTO.name
-            reservationToUpdate.reservationStart = reservationUpdateDTO.start
-            reservationToUpdate.reservationEnd = reservationEnd
+            reservationToUpdate.name = reservationUpdateDTO.name
+            reservationToUpdate.start = reservationUpdateDTO.start
+            reservationToUpdate.end = reservationEnd
             reservationToUpdate.seatReserved = assetToReserve
             this.reservationRulesService.checkUpdateReservation(reservationToUpdate)
             this.reservationRepository.updateReservation(reservationToUpdate)

@@ -45,8 +45,8 @@ class SeatServiceImpl(
             val tagNFC = this.tagNFCService.viewTagNFC(seatUpdateDTO.tagNFCId)
             if ( tagNFC !== null )
             {
-                seat.seatName = seatUpdateDTO.name
-                seat.seatCanBeBooked = seatUpdateDTO.canBeBooked
+                seat.name = seatUpdateDTO.name
+                seat.canBeBooked = seatUpdateDTO.canBeBooked
                 seat.tagNfc = tagNFC
                 this.seatRepository.updateSeat(seat)
 

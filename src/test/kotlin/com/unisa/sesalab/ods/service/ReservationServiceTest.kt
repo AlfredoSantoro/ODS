@@ -21,7 +21,7 @@ class ReservationServiceTest: BaseTest()
         val seSaLabAccount = this.userServiceImpl.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
-        Assertions.assertThat(seSaLabAccount.password).isEqualTo(PasswordManager.encodePassword("lamiapass"))
+        Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))
         val tagNFC = this.tagNFCService.createTagNFC(TagNfcDTO("test-tag", "value"))
         val seat = this.seatService.createSeat(SeatInsertDTO("test-seat", true, tagNFC.id!!))!!
         val newReservation = Reservation("testReservation", OffsetDateTime.now(),

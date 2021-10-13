@@ -1,5 +1,6 @@
 package com.unisa.sesalab.ods.repository.users
 
+import com.unisa.sesalab.ods.factory.AccountFactory
 import com.unisa.sesalab.ods.model.SESALabAccount
 import com.unisa.sesalab.ods.repository.AbstractDAO
 import development.kit.user.Account
@@ -19,21 +20,33 @@ class UserRepositoryImpl(
 
     override fun deleteUser(id: Long) { this.delete(id) }
 
-    override fun findAccountById(accountId: Long): Account? { return this.findById(accountId) }
+    override fun findAccountById(accountId: Long): Account?
+    {
+        val entity = this.findById(accountId)
+        return if ( entity !== null )
+        {
+            AccountFactory.createAccount(entity)
+        }
+        else null
+    }
 
-    override fun findAccountByUsername(username: String): Account? { return this.findByUsernameIgnoreCase(username) }
+    override fun findAccountByUsername(username: String): Account?
+    {   val entity = this.findByUsernameIgnoreCase(username)
+        return if ( entity !== null )
+        {
+            AccountFactory.createAccount(entity)
+        }
+        else null
+    }
 
     override fun saveAccount(createAccount: CreateAccount): Account
     {
-        val sesaLabAccount = SESALabAccount(createAccount)
-        val sesaLabAccountSaved = this.save(sesaLabAccount)
-        sesaLabAccountSaved.accountId = sesaLabAccountSaved.id
-        return sesaLabAccountSaved
+        return AccountFactory.createAccount(this.save(SESALabAccount(createAccount)))
     }
 
-    override fun updateAccount(account: Account): Account {
-        val res = this.update(SESALabAccount(account))
-        return res
+    override fun updateAccount(account: Account): Account
+    {
+        return AccountFactory.createAccount(this.update(SESALabAccount(account)))
     }
 
     override fun findByUsernameIgnoreCase(username: String): SESALabAccount?
@@ -41,7 +54,7 @@ class UserRepositoryImpl(
         this.logger.info("### finding user by username #$username")
         return try
         {
-            val query = this.em.createQuery("select u from ACCOUNT as u where lower(u.accountUsername)= :username", SESALabAccount::class.java)
+            val query = this.em.createQuery("select u from ACCOUNT as u where lower(u.username)= :username", SESALabAccount::class.java)
             query.setParameter("username", username.lowercase())
             query.singleResult
         }

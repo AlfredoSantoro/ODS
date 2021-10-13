@@ -32,7 +32,7 @@ class SESALabReservationRulesServiceImpl(
     @Throws(ReservationConstraintsException::class)
     override fun checkNewReservation(reservation: Reservation)
     {
-        val userAuth = this.accessAuthRepository.findAuthorizationBetween(reservation.reservationStart, reservation.reservationEnd)
+        val userAuth = this.accessAuthRepository.findAuthorizationBetween(reservation.start, reservation.end)
         if ( userAuth !== null )
         {
             if ( userAuth.granted )
@@ -41,7 +41,7 @@ class SESALabReservationRulesServiceImpl(
                 * Check that the reservation interval is included in the opening times of the laboratory.
                 * If the reservation interval is not included in the laboratory opening times then throws an exception
                  */
-                val openingTime = this.openingTimeRepository.findByDayOfWeek(reservation.reservationStart.dayOfWeek)
+                val openingTime = this.openingTimeRepository.findByDayOfWeek(reservation.start.dayOfWeek)
                 if ( !this.reservationIsIncludedInTheOpeningTimesOfTheLab(reservation, openingTime) )
                 {
                     throw ReservationConstraintsException("Cannot create a reservation beyond the lab opening times")
@@ -63,9 +63,9 @@ class SESALabReservationRulesServiceImpl(
         return if ( periodicOpeningTime === null ) false
         else
         {
-            reservation.reservationStart.toOffsetTime() >= periodicOpeningTime.open
-                    && reservation.reservationStart.toOffsetTime() <= periodicOpeningTime.close
-                    && reservation.reservationEnd.toOffsetTime() <= periodicOpeningTime.close
+            reservation.start.toOffsetTime() >= periodicOpeningTime.open
+                    && reservation.start.toOffsetTime() <= periodicOpeningTime.close
+                    && reservation.end.toOffsetTime() <= periodicOpeningTime.close
         }
     }
 
@@ -91,9 +91,9 @@ class SESALabReservationRulesServiceImpl(
 
     override fun checkUpdateReservation(reservation: Reservation)
     {
-        this.checkUserReservationsOverlaps(reservation.sesaLabAccount.id!!, reservation.reservationStart, reservation.reservationEnd, reservation.id)
-        this.checkAssetReservationsOverlaps(reservation.seatReserved.id!!, reservation.reservationStart, reservation.reservationEnd, reservation.id)
-        if ( this.isOnGoing(reservation.reservationStart, reservation.reservationEnd) )
+        this.checkUserReservationsOverlaps(reservation.account.id!!, reservation.start, reservation.end, reservation.id)
+        this.checkAssetReservationsOverlaps(reservation.seatReserved.id!!, reservation.start, reservation.end, reservation.id)
+        if ( this.isOnGoing(reservation.start, reservation.end) )
         {
             throw ReservationConstraintsException("Cannot update a reservation ongoing")
         }

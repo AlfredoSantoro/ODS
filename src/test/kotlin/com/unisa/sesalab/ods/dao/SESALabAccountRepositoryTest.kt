@@ -15,7 +15,7 @@ class SESALabAccountRepositoryTest: BaseTest()
             "mariored1", "lamiapass", AccountType.USER)
         val accountOnDB = this.userRepositoryImpl.saveAccount(user)
         Assertions.assertThat(accountOnDB).isNotNull
-        Assertions.assertThat(accountOnDB.accountId).isNotNull
+        Assertions.assertThat(accountOnDB).isNotNull
         Assertions.assertThat(accountOnDB.accountId).isNotEqualTo(-1)
     }
 
@@ -55,7 +55,7 @@ class SESALabAccountRepositoryTest: BaseTest()
         Assertions.assertThat(accountOnDB).isNotNull
         Assertions.assertThat(accountOnDB.accountId).isNotNull
         Assertions.assertThat(accountOnDB.accountId).isNotEqualTo(-1)
-        Assertions.assertThat(this.userRepositoryImpl.findAccountById(accountOnDB.accountId!!)!!.accountId)
-            .isEqualTo(accountOnDB.accountId)
+        Assertions.assertThat(this.userRepositoryImpl.findAccountById(accountOnDB.accountId!!)!!.username)
+            .isEqualTo(accountOnDB.username)
     }
 }
