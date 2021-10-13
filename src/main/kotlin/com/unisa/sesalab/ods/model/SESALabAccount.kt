@@ -17,12 +17,11 @@ class SESALabAccount(
     var username: String,
     @Column(name = "PASSWORD", nullable = false)
     var encodedPassword: String,
-)
-{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long ? = null
-
+)
+{
     constructor(createAccount: CreateAccount) : this(
         createAccount.name,
         createAccount.surname,
@@ -38,7 +37,8 @@ class SESALabAccount(
         account.accountType,
         account.email,
         account.username,
-        account.password
+        account.password,
+        account.accountId
     )
 
     override fun toString(): String

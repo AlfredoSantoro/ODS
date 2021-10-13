@@ -12,11 +12,13 @@ object AccountFactory
     fun createAccount(SESALabAccount: SESALabAccount): Account
     {
         this.logger.info("### creating new account from SESALabAccount")
-        return Account(SESALabAccount.name,
+        val account = Account(SESALabAccount.name,
             SESALabAccount.surname,
             SESALabAccount.email,
             SESALabAccount.username,
             SESALabAccount.encodedPassword,
             SESALabAccount.userType)
+        account.accountId = SESALabAccount.id
+        return account
     }
 }
