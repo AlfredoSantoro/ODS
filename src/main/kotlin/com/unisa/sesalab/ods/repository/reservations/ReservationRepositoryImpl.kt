@@ -73,34 +73,23 @@ class ReservationRepositoryImpl(
     private fun findAllReservationsOverlapsBy(columnTypeToFilter: IdType,
                                               columnId: Long,
                                               start: OffsetDateTime,
-                                               end: OffsetDateTime,
+                                              end: OffsetDateTime,
                                               excludeReservationId: Long?): List<Reservation>
     {
-        val columnToFilter = when (columnTypeToFilter)
+        return when (columnTypeToFilter)
         {
-            IdType.USER_ID -> "user_id"
-            IdType.ASSET_ID -> "asset_id"
+            IdType.USER_ID -> emptyList()
+            IdType.ASSET_ID ->
+            {
+                val q = this.em.createQuery("select res from Reservation as res where res.seatReserved.id = :seatId" +
+                        " and ((res.start >= :start and res.start < :resEnd) or " +
+                        " (res.end > :start and res.end <= :resEnd))",
+                    Reservation::class.java)
+                q.setParameter("seatId", columnId)
+                q.setParameter("start", start)
+                q.setParameter("resEnd", end)
+                q.resultList
+            }
         }
-        val idPath = this.root.get<Long>(columnToFilter)
-        val startPath = this.root.get<OffsetDateTime>("start")
-        val endPath = this.root.get<OffsetDateTime>("end")
-        if ( excludeReservationId !== null )
-        {
-            val reservationPath = this.root.get<Long>("id")
-            this.cq.select(this.root)
-                    .where(this.cb.and(this.cb.equal(idPath, columnId), this.cb.notEqual(reservationPath, excludeReservationId),
-                            this.cb.or(this.cb.between(startPath, start, end), this.cb.between(endPath, start, end))
-                    ))
-        }
-        else
-        {
-            this.cq
-                    .select(this.root)
-                    .where(this.cb.and(this.cb.equal(idPath, columnId),
-                            this.cb.or(this.cb.between(startPath, start, end), this.cb.between(endPath, start, end))
-                    ))
-        }
-
-        return this.session.createQuery(this.cq).resultList
     }
 }

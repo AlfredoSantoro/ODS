@@ -6,11 +6,11 @@ import com.unisa.sesalab.ods.exception.ReservationConstraintsException
 import com.unisa.sesalab.ods.exception.SettingException
 import com.unisa.sesalab.ods.factory.AccountFactory
 import com.unisa.sesalab.ods.factory.AssetFactory
+import com.unisa.sesalab.ods.factory.ReservationEntityFactory
 import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
 import com.unisa.sesalab.ods.service.seat.SeatService
 import com.unisa.sesalab.ods.service.setting.SettingService
-import com.unisa.sesalab.ods.service.user.UserService
 import development.kit.reservation.ReservationManager
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,7 +22,6 @@ import java.time.Duration
 class ReservationServiceImpl(
         private val reservationRepository: ReservationRepository,
         private val seatService: SeatService,
-        private val userService: UserService,
         private val settingService: SettingService,
         private val reservationRulesService: ReservationRulesService
 ): ReservationService
@@ -39,53 +38,17 @@ class ReservationServiceImpl(
 
     override fun createReservation(reservationInsertDTO: ReservationInsertDTO)
     {
-        /*
-            1) controlla l'esistenza del posto che deve essere prenotato e dell'utente
-            2) ottiene la durata della prenotazione (parametro)
-            3) controlla se ci sono prenotazioni dell'utente che si sovrappongono in quella fascia oraria
-            4) controlla se l'asset è disponibile
-            5) Check Autorizzazione
-            6) Salva
-         */
+        synchronized(Any()) {
+            val newReservation = this.reservationManager.createReservation(
+                AccountFactory.createAccount(reservationInsertDTO.account), reservationInsertDTO.start,
+                reservationInsertDTO.reservationDuration, AssetFactory.createAsset(reservationInsertDTO.seat))
 
-        val assetToReserve = this.seatService.findById(reservationInsertDTO.seatId)
-        val user = this.userService.viewAccount(reservationInsertDTO.userId)
-        if ( assetToReserve !== null && user !== null )
-        {
-            val reservationDurationHourSetting = this.settingService.findByName(this.reservationDurationHour)
-                    ?: throw SettingException("### reservationDurationHourSetting not found")
+            this.reservationRepository.insertReservation(
+                ReservationEntityFactory.createReservation(newReservation, reservationInsertDTO.account,
+                    reservationInsertDTO.seat, reservationInsertDTO.name))
 
-            val reservationEnd =
-                    reservationInsertDTO.start.plus(reservationDurationHourSetting.value.toLong(),
-                            reservationDurationHourSetting.representationUnit)
-
-            // find all reservations overlaps
-            // this.reservationRulesService.checkReservationOverlaps(user.id!!, reservationInsertDTO.start, reservationEnd)
-
-            synchronized(Any()) {
-                // Check that the asset to reserve is available
-                this.reservationManager.createReservation(AccountFactory.createAccount(user), reservationInsertDTO.start,
-                    Duration.of(
-                        reservationDurationHourSetting.value.toLong(),
-                        reservationDurationHourSetting.representationUnit),
-                        AssetFactory.createAsset(assetToReserve)
-                )
-
-
-                // this.reservationRulesService.checkAssetAvailability(assetToReserve.id!!, reservationInsertDTO.start, reservationEnd)
-                // validReservation
-                val reservationToSave = Reservation(reservationInsertDTO.name, reservationInsertDTO.start,
-                        reservationEnd, user, assetToReserve)
-                this.reservationRulesService.checkNewReservation(reservationToSave)
-                this.logger.info("### saving a new reservation for asset #${reservationInsertDTO.seatId} " +
-                        "and user #${reservationInsertDTO.userId}")
-                this.reservationRepository.insertReservation(reservationToSave)
-                this.logger.info("### asset #${assetToReserve.id} reserved by user ${user.id}")
-            }
-        }
-        else
-        {
-            throw ReservationConstraintsException("Cannot create a reservation with the user or asset null")
+            this.logger.info("### asset #${reservationInsertDTO.seat.id} reserved " +
+                    "by user ${reservationInsertDTO.account.id}")
         }
     }
 
