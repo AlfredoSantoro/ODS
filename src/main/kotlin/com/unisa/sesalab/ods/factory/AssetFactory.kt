@@ -1,14 +1,20 @@
 package com.unisa.sesalab.ods.factory
 
-import com.unisa.sesalab.ods.model.Seat
+import com.unisa.sesalab.ods.model.StudySeat
 import development.kit.asset.Asset
+import development.kit.asset.Seat
 
 object AssetFactory
 {
-    fun createAsset(seat: Seat): Asset
+    fun createAsset(studySeat: StudySeat): Asset
     {
-        val asset = Asset(seat.name, seat.canBeBooked)
-        asset.assetId = seat.id
+        val asset = Asset(studySeat.name, studySeat.canBeBooked)
+        asset.assetId = studySeat.id
         return asset
+    }
+
+    fun createSeat(studySeat: StudySeat): Seat
+    {
+        return Seat(studySeat.name, studySeat.canBeBooked)
     }
 }

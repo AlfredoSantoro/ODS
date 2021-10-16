@@ -65,7 +65,7 @@ class ReservationServiceTest: BaseTest()
        val res = this.reservationService.findAllReservationsOnGoing().filter { it.account.id == seSaLabAccount.id }
        Assertions.assertThat(res).isNotEmpty
        res.forEach {
-           Assertions.assertThat(it.seatReserved.id).isEqualTo(seat.id)
+           Assertions.assertThat(it.studySeatReserved.id).isEqualTo(seat.id)
            Assertions.assertThat(it.account.id).isEqualTo(seSaLabAccount.id)
            Assertions.assertThat(it.name).isEqualTo("reservation-test")
            Assertions.assertThat(it.start).isEqualTo(start)

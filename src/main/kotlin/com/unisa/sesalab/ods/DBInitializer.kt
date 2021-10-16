@@ -2,7 +2,7 @@ package com.unisa.sesalab.ods
 
 import com.unisa.sesalab.ods.dto.SeatInsertDTO
 import com.unisa.sesalab.ods.dto.TagNfcDTO
-import com.unisa.sesalab.ods.model.Seat
+import com.unisa.sesalab.ods.model.StudySeat
 import com.unisa.sesalab.ods.model.TagNfc
 import com.unisa.sesalab.ods.service.seat.SeatService
 import com.unisa.sesalab.ods.service.tagnfc.TagNFCService
@@ -28,7 +28,7 @@ class DBInitializer(
 {
     private val logger: Logger = LoggerFactory.getLogger(DBInitializer::class.java)
 
-    private val seats = mutableListOf<Seat>()
+    private val studySeats = mutableListOf<StudySeat>()
 
     @Transactional
     override fun run(vararg args: String?)
@@ -86,7 +86,7 @@ class DBInitializer(
         this.logger.info("### Creating seats...")
 
         this.initTagNFC().forEachIndexed { index, tagNfc ->
-            this.seats.add(this.seatsService.createSeat(SeatInsertDTO("seat$index", true, tagNfc.id!!))!!)
+            this.studySeats.add(this.seatsService.createSeat(SeatInsertDTO("seat$index", true, tagNfc.id!!))!!)
         }
 
         this.logger.info("### Seats created...")

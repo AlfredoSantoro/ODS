@@ -3,7 +3,7 @@ package com.unisa.sesalab.ods.model
 import javax.persistence.*
 
 @Entity
-data class Seat(
+data class StudySeat(
         var name: String,
         var canBeBooked: Boolean,
         @OneToOne(fetch = FetchType.LAZY)

@@ -1,12 +1,12 @@
 package com.unisa.sesalab.ods.repository.seats
 
-import com.unisa.sesalab.ods.model.Seat
+import com.unisa.sesalab.ods.model.StudySeat
 
 interface SeatRepository
 {
-    fun insertSeat(seat: Seat): Seat
-    fun updateSeat(seat: Seat): Seat
+    fun insertSeat(studySeat: StudySeat): StudySeat
+    fun updateSeat(studySeat: StudySeat): StudySeat
     fun deleteSeat(id: Long)
-    fun findBySeatId(id: Long): Seat?
-    fun findAllSeats(): List<Seat>
+    fun findBySeatId(id: Long): StudySeat?
+    fun findAllSeats(): List<StudySeat>
 }

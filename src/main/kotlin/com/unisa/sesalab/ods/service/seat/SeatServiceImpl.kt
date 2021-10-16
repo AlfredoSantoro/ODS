@@ -2,7 +2,7 @@ package com.unisa.sesalab.ods.service.seat
 
 import com.unisa.sesalab.ods.dto.SeatInsertDTO
 import com.unisa.sesalab.ods.dto.SeatUpdateDTO
-import com.unisa.sesalab.ods.model.Seat
+import com.unisa.sesalab.ods.model.StudySeat
 import com.unisa.sesalab.ods.repository.seats.SeatRepository
 import com.unisa.sesalab.ods.service.tagnfc.TagNFCService
 import org.slf4j.Logger
@@ -17,13 +17,13 @@ class SeatServiceImpl(
 {
     private val logger: Logger = LoggerFactory.getLogger(SeatServiceImpl::class.java)
 
-    override fun createSeat(seatDTO: SeatInsertDTO): Seat?
+    override fun createSeat(seatDTO: SeatInsertDTO): StudySeat?
     {
         val tagNFC = this.tagNFCService.viewTagNFC(seatDTO.tagNfcId)
         return if ( tagNFC !== null )
         {
-            val seat = Seat(seatDTO.name, seatDTO.canBeBooked, tagNFC)
-            this.seatRepository.insertSeat(seat)
+            val studySeat = StudySeat(seatDTO.name, seatDTO.canBeBooked, tagNFC)
+            this.seatRepository.insertSeat(studySeat)
         }
         else
         {
@@ -37,7 +37,7 @@ class SeatServiceImpl(
         this.seatRepository.deleteSeat(id)
     }
 
-    override fun updateSeat(seatUpdateDTO: SeatUpdateDTO): Seat?
+    override fun updateSeat(seatUpdateDTO: SeatUpdateDTO): StudySeat?
     {
         val seat = this.seatRepository.findBySeatId(seatUpdateDTO.id)
         return if ( seat !== null )
@@ -64,9 +64,9 @@ class SeatServiceImpl(
         }
     }
 
-    override fun findById(id: Long): Seat? { return this.seatRepository.findBySeatId(id) }
+    override fun findById(id: Long): StudySeat? { return this.seatRepository.findBySeatId(id) }
 
-    override fun findAllSeats(): List<Seat>
+    override fun findAllSeats(): List<StudySeat>
     {
         return this.seatRepository.findAllSeats()
     }

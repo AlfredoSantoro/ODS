@@ -11,7 +11,7 @@ class Reservation(
     @ManyToOne(fetch = FetchType.LAZY)
     var account: SESALabAccount,
     @ManyToOne(fetch = FetchType.LAZY)
-    var seatReserved: Seat,
+    var studySeatReserved: StudySeat,
     @Column(name = "PAUSED")
     var inPause: Boolean = false,
     @Id
@@ -21,7 +21,7 @@ class Reservation(
 {
     override fun toString(): String {
         return "Reservation(reservationName='$name', reservationStart=$start, " +
-                "reservationEnd=$end, sesaLabAccount=$account, seatReserved=$seatReserved," +
+                "reservationEnd=$end, sesaLabAccount=$account, seatReserved=$studySeatReserved," +
                 " paused=$inPause, id=$id)"
     }
 }

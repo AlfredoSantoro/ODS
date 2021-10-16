@@ -41,13 +41,13 @@ class ReservationServiceImpl(
         synchronized(Any()) {
             val newReservation = this.reservationManager.createReservation(
                 AccountFactory.createAccount(reservationInsertDTO.account), reservationInsertDTO.start,
-                reservationInsertDTO.reservationDuration, AssetFactory.createAsset(reservationInsertDTO.seat))
+                reservationInsertDTO.reservationDuration, AssetFactory.createAsset(reservationInsertDTO.studySeat))
 
             this.reservationRepository.insertReservation(
                 ReservationEntityFactory.createReservation(newReservation, reservationInsertDTO.account,
-                    reservationInsertDTO.seat, reservationInsertDTO.name))
+                    reservationInsertDTO.studySeat, reservationInsertDTO.name))
 
-            this.logger.info("### asset #${reservationInsertDTO.seat.id} reserved " +
+            this.logger.info("### asset #${reservationInsertDTO.studySeat.id} reserved " +
                     "by user ${reservationInsertDTO.account.id}")
         }
     }
@@ -68,7 +68,7 @@ class ReservationServiceImpl(
             reservationToUpdate.name = reservationUpdateDTO.name
             reservationToUpdate.start = reservationUpdateDTO.start
             reservationToUpdate.end = reservationEnd
-            reservationToUpdate.seatReserved = assetToReserve
+            reservationToUpdate.studySeatReserved = assetToReserve
             this.reservationRulesService.checkUpdateReservation(reservationToUpdate)
             this.reservationRepository.updateReservation(reservationToUpdate)
         }

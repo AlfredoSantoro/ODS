@@ -1,7 +1,7 @@
 package com.unisa.sesalab.ods.dto
 
 import com.unisa.sesalab.ods.model.SESALabAccount
-import com.unisa.sesalab.ods.model.Seat
+import com.unisa.sesalab.ods.model.StudySeat
 import java.time.Duration
 import java.time.OffsetDateTime
 
@@ -10,5 +10,5 @@ data class ReservationInsertDTO(
         val start: OffsetDateTime,
         val reservationDuration: Duration,
         val account: SESALabAccount,
-        val seat: Seat
+        val studySeat: StudySeat
 )

@@ -91,7 +91,8 @@ class ReservationRepositoryImpl(
             }
             IdType.ASSET_ID ->
             {
-                val q = this.em.createQuery("select res from Reservation as res where res.seatReserved.id = :seatId" +
+                val q = this.em.createQuery(
+                    "select res from Reservation as res where res.studySeatReserved.id = :seatId" +
                         " and ((res.start >= :start and res.start < :resEnd) or " +
                         " (res.end > :start and res.end <= :resEnd))",
                     Reservation::class.java)

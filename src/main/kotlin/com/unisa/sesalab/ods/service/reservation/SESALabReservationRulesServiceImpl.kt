@@ -73,7 +73,7 @@ class SESALabReservationRulesServiceImpl(
     override fun checkUpdateReservation(reservation: Reservation)
     {
         this.isUserReservationsOverlaps(reservation.account.id!!, reservation.start, reservation.end, reservation.id)
-        this.isAssetReservationsOverlaps(reservation.seatReserved.id!!, reservation.start, reservation.end, reservation.id)
+        this.isAssetReservationsOverlaps(reservation.studySeatReserved.id!!, reservation.start, reservation.end, reservation.id)
         if ( this.isOnGoing(reservation.start, reservation.end) )
         {
             throw ReservationConstraintsException("Cannot update a reservation ongoing")
