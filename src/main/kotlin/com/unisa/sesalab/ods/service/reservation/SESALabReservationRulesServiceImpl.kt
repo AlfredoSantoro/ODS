@@ -90,7 +90,7 @@ class SESALabReservationRulesServiceImpl(
         account: Account,
         startReservation: OffsetDateTime,
         endReservation: OffsetDateTime
-    ): Boolean { return !(this.isUserReservationsOverlaps(account.accountId!!, startReservation, endReservation)) }
+    ): Boolean { return this.isUserReservationsOverlaps(account.accountId!!, startReservation, endReservation) }
 
     private fun isOnGoing(start: OffsetDateTime, end: OffsetDateTime): Boolean
     {

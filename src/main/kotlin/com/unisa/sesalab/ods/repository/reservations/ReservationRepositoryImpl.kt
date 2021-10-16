@@ -78,7 +78,17 @@ class ReservationRepositoryImpl(
     {
         return when (columnTypeToFilter)
         {
-            IdType.USER_ID -> emptyList()
+            IdType.USER_ID ->
+            {
+                val q = this.em.createQuery("select res from Reservation as res where res.account.id = :accountID" +
+                        " and ((res.start >= :start and res.start < :resEnd) or " +
+                        " (res.end > :start and res.end <= :resEnd))",
+                    Reservation::class.java)
+                q.setParameter("accountID", columnId)
+                q.setParameter("start", start)
+                q.setParameter("resEnd", end)
+                q.resultList
+            }
             IdType.ASSET_ID ->
             {
                 val q = this.em.createQuery("select res from Reservation as res where res.seatReserved.id = :seatId" +

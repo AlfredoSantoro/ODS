@@ -6,6 +6,7 @@ import com.unisa.sesalab.ods.dto.SeatInsertDTO
 import com.unisa.sesalab.ods.dto.TagNfcDTO
 import com.unisa.sesalab.ods.model.Reservation
 import development.kit.exception.IllegalReservationException
+import development.kit.exception.ReservationOverlapsException
 import development.kit.user.AccountType
 import development.kit.user.CreateAccount
 import development.kit.utils.PasswordManager
@@ -247,5 +248,43 @@ class ReservationServiceTest: BaseTest()
             Duration.ofHours(1), seSaLabAccount, seat)
 
         this.reservationService.createReservation(secondValidReservation)
+    }
+
+    @Test
+    fun `Should not create a reservation because it overlaps another one (case 5)`()
+    {
+        val account = CreateAccount("Mario", "Rossi","mariorossi@test.it" ,
+            "mariored4", "lamiapass", AccountType.USER)
+        val seSaLabAccount = this.userServiceImpl.signUpUser(account)
+        Assertions.assertThat(seSaLabAccount).isNotNull
+        Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
+        Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))
+        val tagNFC = this.tagNFCService.createTagNFC(TagNfcDTO("test-tag", "value"))
+        Assertions.assertThat(tagNFC).isNotNull
+        Assertions.assertThat(tagNFC.id).isNotNull
+        Assertions.assertThat(tagNFC.id).isNotEqualTo(-1)
+        val seat = this.seatService.createSeat(SeatInsertDTO("test-seat", true, tagNFC.id!!))
+        Assertions.assertThat(seat).isNotNull
+        Assertions.assertThat(seat!!.id).isNotNull
+        Assertions.assertThat(seat.id).isNotEqualTo(-1)
+        val tagNFC2 = this.tagNFCService.createTagNFC(TagNfcDTO("test-tag-2", "value-2"))
+        Assertions.assertThat(tagNFC2).isNotNull
+        Assertions.assertThat(tagNFC2.id).isNotNull
+        Assertions.assertThat(tagNFC2.id).isNotEqualTo(-1)
+        val seat2 = this.seatService.createSeat(SeatInsertDTO("test-seat-2", true, tagNFC2.id!!))
+        Assertions.assertThat(seat2).isNotNull
+        Assertions.assertThat(seat2!!.id).isNotNull
+        Assertions.assertThat(seat2.id).isNotEqualTo(-1)
+
+        val start = OffsetDateTime.now()
+        val validReservation = ReservationInsertDTO("reservation-test", start,
+            Duration.ofHours(1), seSaLabAccount, seat)
+        this.reservationService.createReservation(validReservation)
+
+        val reservationOverlap = ReservationInsertDTO("reservation-test", start.plusMinutes(20),
+            Duration.ofHours(1), seSaLabAccount, seat2)
+        assertThrows<ReservationOverlapsException> {
+            this.reservationService.createReservation(reservationOverlap)
+        }
     }
 }
