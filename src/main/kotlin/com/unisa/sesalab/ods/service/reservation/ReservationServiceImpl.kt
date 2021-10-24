@@ -97,13 +97,14 @@ class ReservationServiceImpl(
 
     override fun viewReservationDetail(id: Long): Reservation? { return this.reservationRepository.viewReservation(id) }
 
-    override fun reservationsHistory(): List<Reservation>
+    override fun reservationsHistory(username: String): List<Reservation>
     {
         val reservationHistorySetting = this.settingService.findByName(this.reservationHistorySetting)
         if ( reservationHistorySetting !== null )
         {
-            return this.reservationRepository.viewRecentReservations(
-                    Duration.of(reservationHistorySetting.value.toLong(), reservationHistorySetting.representationUnit))
+            return this.reservationRepository.viewRecentUserReservations(
+                    Duration.of(reservationHistorySetting.value.toLong(), reservationHistorySetting.representationUnit),
+                username)
         }
         else
         {
@@ -111,5 +112,10 @@ class ReservationServiceImpl(
         }
     }
 
-    override fun findAllReservationsOnGoing(): List<Reservation> { return this.reservationRepository.viewReservationsOnGoing() }
+    override fun findAllReservationsOnGoingByUser(username: String): Reservation?
+    {
+        return this.reservationRepository.viewReservationOnGoingByUser(username)
+    }
+
+    override fun viewAllReservationsOnGoing(): List<Reservation> { return this.reservationRepository.viewAllReservationsOnGoing() }
 }

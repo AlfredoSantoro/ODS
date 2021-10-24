@@ -11,6 +11,7 @@ interface ReservationService
     fun deleteReservation(id: Long)
     fun pauseReservation(id: Long)
     fun viewReservationDetail(id: Long): Reservation?
-    fun reservationsHistory(): List<Reservation>
-    fun findAllReservationsOnGoing(): List<Reservation>
+    fun reservationsHistory(username: String): List<Reservation>
+    fun findAllReservationsOnGoingByUser(username: String): Reservation?
+    fun viewAllReservationsOnGoing(): List<Reservation>
 }

@@ -33,7 +33,11 @@ class DBInitializer(
     @Value("\${settings.default-names.reservationHistory}")
     private lateinit var reservationHistorySetting: String
 
+    @Value("\${settings.default-names.reservationDurationHour}")
+    private lateinit var reservationDurationHour: String
+
     private val days = 7
+    private val reservationDurationInHour = 1
 
     private val logger: Logger = LoggerFactory.getLogger(DBInitializer::class.java)
 
@@ -105,8 +109,15 @@ class DBInitializer(
     private fun initSettings()
     {
         this.logger.info("### creating settings")
+
+        // RESERVATION HISTORY
         this.settingService.createSetting(SettingDTO(this.reservationHistorySetting,
             this.days, "reservation history", ChronoUnit.DAYS))
+
+        // RESERVATION DURATION
+        this.settingService.createSetting(SettingDTO(this.reservationDurationHour, this.reservationDurationInHour,
+        "reservation duration", ChronoUnit.HOURS))
+
         this.logger.info("### Settings created")
     }
 }

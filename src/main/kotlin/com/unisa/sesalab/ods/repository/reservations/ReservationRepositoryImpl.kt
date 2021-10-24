@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository
 import java.time.Duration
 import java.time.OffsetDateTime
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
 @Repository
 class ReservationRepositoryImpl(
@@ -25,19 +26,39 @@ class ReservationRepositoryImpl(
 
     override fun viewReservation(id: Long): Reservation? { return this.findById(id) }
 
-    override fun viewReservationsOnGoing(): List<Reservation>
+    override fun viewReservationOnGoingByUser(username: String): Reservation?
     {
+        this.logger.info("### view reservation on going by user #$username")
         val now = OffsetDateTime.now()
-        val startPath = this.root.get<OffsetDateTime>("start")
-        val endPath = this.root.get<OffsetDateTime>("end")
-        this.cq.select(this.root)
-                .where(this.cb.and(this.cb.lessThanOrEqualTo(startPath, now), this.cb.greaterThan(endPath, now)))
-        return this.session.createQuery(this.cq).resultList
+        val query = this.em.createQuery("select res from Reservation as res where :now >= res.start and :now < res.end" +
+                " and res.account.username = :username", Reservation::class.java)
+        query.setParameter("now", now)
+        query.setParameter("username", username)
+        return try
+        {
+            query.singleResult
+        }
+        catch (error: NoResultException)
+        {
+            this.logger.info("no reservation on going found by username #$username")
+            null
+        }
     }
 
-    override fun viewRecentReservations(duration: Duration): List<Reservation>
+    override fun viewAllReservationsOnGoing(): List<Reservation>
     {
-        val startTime = OffsetDateTime.now().minus(duration)
+        this.logger.info("### view all reservation on going")
+        val now = OffsetDateTime.now()
+        val query = this.em.createQuery("select res from Reservation as res where :now >= res.start and :now < res.end",
+            Reservation::class.java)
+        query.setParameter("now", now)
+        return query.resultList
+    }
+
+    override fun viewRecentUserReservations(duration: Duration, username: String): List<Reservation>
+    {
+        val now = OffsetDateTime.now()
+        val startTime = now.minus(duration)
 
         val whenStarted = if ( duration.toDays() > 0 )
         {
@@ -48,10 +69,13 @@ class ReservationRepositoryImpl(
             startTime
         }
 
-        val startPath = this.root.get<OffsetDateTime>("start")
-        this.cq.select(this.root)
-                .where(this.cb.and(this.cb.greaterThan(startPath, whenStarted), this.cb.lessThanOrEqualTo(startPath, OffsetDateTime.now())))
-        return this.session.createQuery(this.cq).resultList
+        val q = this.em.createQuery("select res from Reservation as res where res.start >= :whenStarted " +
+                "and res.start <= :now and res.account.username =: username",
+            Reservation::class.java)
+        q.setParameter("whenStarted", whenStarted)
+        q.setParameter("now", now)
+        q.setParameter("username", username)
+        return q.resultList
     }
 
     override fun findAllUserReservationsOverlaps(start: OffsetDateTime,
