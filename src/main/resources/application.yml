@@ -8,16 +8,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        default_schema: HGT06690
+        default_schema: BTF89701
         jdbc:
           time_zone: UTC
   profiles:
     active: default
   datasource: #DB2
     driver-class-name: com.ibm.db2.jcc.DB2Driver
-    url: jdbc:db2://0c77d6f2-5da9-48a9-81f8-86b520b87518.bs2io90l08kqb1od8lcg.databases.appdomain.cloud:31198/bludb:sslConnection=true;
-    username: hgt06690
-    password: Y0cnVaY38X7CZjTn
+    url: jdbc:db2://8e359033-a1c9-4643-82ef-8ac06f5107eb.bs2io90l08kqb1od8lcg.databases.appdomain.cloud:30120/bludb:sslConnection=true;
+    username: btf89701
+    password: Diy0EW0FWEnSb8m8
 settings:
   default-names:
     reservationHistory: reservationHistoryInDays
