@@ -10,7 +10,7 @@ interface ReservationRepository
     fun updateReservation(reservation: Reservation)
     fun deleteReservationById(id :Long)
     fun viewReservation(id: Long): Reservation?
-    fun viewReservationOnGoingByUser(username: String): Reservation?
+    fun findReservationOnGoingByUser(username: String): Reservation?
     fun viewAllReservationsOnGoing(): List<Reservation>
     fun viewRecentUserReservations(duration: Duration, username: String): List<Reservation>
     fun findAllUserReservationsOverlaps(start:OffsetDateTime, end: OffsetDateTime, userId: Long, excludeReservationId: Long?): List<Reservation>

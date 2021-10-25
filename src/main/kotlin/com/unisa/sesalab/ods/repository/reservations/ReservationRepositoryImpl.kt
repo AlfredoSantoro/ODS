@@ -26,7 +26,7 @@ class ReservationRepositoryImpl(
 
     override fun viewReservation(id: Long): Reservation? { return this.findById(id) }
 
-    override fun viewReservationOnGoingByUser(username: String): Reservation?
+    override fun findReservationOnGoingByUser(username: String): Reservation?
     {
         this.logger.info("### view reservation on going by user #$username")
         val now = OffsetDateTime.now()

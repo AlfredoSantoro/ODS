@@ -112,9 +112,9 @@ class ReservationServiceImpl(
         }
     }
 
-    override fun findAllReservationsOnGoingByUser(username: String): Reservation?
+    override fun findReservationOnGoingByUser(username: String): Reservation?
     {
-        return this.reservationRepository.viewReservationOnGoingByUser(username)
+        return this.reservationRepository.findReservationOnGoingByUser(username)
     }
 
     override fun viewAllReservationsOnGoing(): List<Reservation> { return this.reservationRepository.viewAllReservationsOnGoing() }

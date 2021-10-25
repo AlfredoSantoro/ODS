@@ -33,7 +33,7 @@ class ReservationRepositorTest: BaseTest()
         val newReservation = Reservation("testReservation", OffsetDateTime.now(),
             OffsetDateTime.now().plusHours(1), seSaLabAccount, seat)
         this.reservationRepo.insertReservation(newReservation)
-        val reservation = this.reservationService.findAllReservationsOnGoingByUser(seSaLabAccount.username)
+        val reservation = this.reservationService.findReservationOnGoingByUser(seSaLabAccount.username)
         Assertions.assertThat(reservation).isNotNull
         Assertions.assertThat(reservation!!.account.id).isEqualTo(seSaLabAccount.id)
         Assertions.assertThat(reservation.studySeatReserved.id).isEqualTo(seat.id)
