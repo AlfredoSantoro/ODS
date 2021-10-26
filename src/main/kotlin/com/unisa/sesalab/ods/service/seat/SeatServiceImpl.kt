@@ -19,7 +19,7 @@ class SeatServiceImpl(
 
     override fun createSeat(seatDTO: SeatInsertDTO): StudySeat?
     {
-        val tagNFC = this.tagNFCService.viewTagNFC(seatDTO.tagNfcId)
+        val tagNFC = this.tagNFCService.findTagNFCById(seatDTO.tagNfcId)
         return if ( tagNFC !== null )
         {
             val studySeat = StudySeat(seatDTO.name, seatDTO.canBeBooked, tagNFC)
@@ -42,7 +42,7 @@ class SeatServiceImpl(
         val seat = this.seatRepository.findBySeatId(seatUpdateDTO.id)
         return if ( seat !== null )
         {
-            val tagNFC = this.tagNFCService.viewTagNFC(seatUpdateDTO.tagNFCId)
+            val tagNFC = this.tagNFCService.findTagNFCById(seatUpdateDTO.tagNFCId)
             if ( tagNFC !== null )
             {
                 seat.name = seatUpdateDTO.name

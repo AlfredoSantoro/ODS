@@ -95,7 +95,7 @@ class ReservationServiceImpl(
         else { throw ReservationConstraintsException("Cannot pause reservation #$id because does not exist") }
     }
 
-    override fun viewReservationDetail(id: Long): Reservation? { return this.reservationRepository.viewReservation(id) }
+    override fun findReservationById(id: Long): Reservation? { return this.reservationRepository.viewReservation(id) }
 
     override fun reservationsHistory(username: String): List<Reservation>
     {

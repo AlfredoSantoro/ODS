@@ -10,7 +10,7 @@ interface ReservationService
     fun updateReservation(reservationUpdateDTO: ReservationUpdateDTO)
     fun deleteReservation(id: Long)
     fun pauseReservation(id: Long)
-    fun viewReservationDetail(id: Long): Reservation?
+    fun findReservationById(id: Long): Reservation?
     fun reservationsHistory(username: String): List<Reservation>
     fun findReservationOnGoingByUser(username: String): Reservation?
     fun viewAllReservationsOnGoing(): List<Reservation>

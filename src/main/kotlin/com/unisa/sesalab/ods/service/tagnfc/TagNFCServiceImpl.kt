@@ -23,7 +23,7 @@ class TagNFCServiceImpl(
     {
         return if ( tagNfcDTO.id !== null )
         {
-            val tagNFC = this.viewTagNFC(tagNfcDTO.id!!)
+            val tagNFC = this.findTagNFCById(tagNfcDTO.id!!)
             if ( tagNFC !== null )
             {
                 tagNFC.name = tagNfcDTO.name
@@ -40,8 +40,13 @@ class TagNFCServiceImpl(
        this.tagNFCRepository.deleteTagNFC(id)
     }
 
-    override fun viewTagNFC(id: Long): TagNfc?
+    override fun findTagNFCById(id: Long): TagNfc?
     {
         return this.tagNFCRepository.findTagNFCById(id)
+    }
+
+    override fun findTagNFCByValue(uid: String): TagNfc?
+    {
+        return this.tagNFCRepository.findTagNFCByValue(uid)
     }
 }

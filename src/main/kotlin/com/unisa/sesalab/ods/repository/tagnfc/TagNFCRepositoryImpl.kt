@@ -6,6 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
 @Repository
 class TagNFCRepositoryImpl(
@@ -32,6 +33,21 @@ class TagNFCRepositoryImpl(
     override fun findTagNFCById(id: Long): TagNfc?
     {
         return this.findById(id)
+    }
+
+    override fun findTagNFCByValue(uid: String): TagNfc?
+    {
+        val q = this.em.createQuery("select tag from TagNfc as tag where tag.value = :uid", TagNfc::class.java)
+        q.setParameter("uid", uid)
+        return try
+        {
+            q.singleResult
+        }
+        catch (error: NoResultException)
+        {
+            this.logger.info("### tag nfc value -> $uid not found")
+            null
+        }
     }
 
 }

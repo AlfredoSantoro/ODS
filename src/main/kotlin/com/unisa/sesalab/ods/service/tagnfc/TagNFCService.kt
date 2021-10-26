@@ -8,5 +8,6 @@ interface TagNFCService
     fun createTagNFC(tagNfcDTO: TagNfcDTO): TagNfc
     fun updateTagNFC(tagNfcDTO: TagNfcDTO): TagNfc?
     fun deleteTagNFC(id: Long)
-    fun viewTagNFC(id: Long): TagNfc?
+    fun findTagNFCById(id: Long): TagNfc?
+    fun findTagNFCByValue(uid: String): TagNfc?
 }

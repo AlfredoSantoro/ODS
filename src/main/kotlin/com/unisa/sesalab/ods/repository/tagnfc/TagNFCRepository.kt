@@ -8,4 +8,5 @@ interface TagNFCRepository
     fun updateTagNFC(tagNfc: TagNfc): TagNfc
     fun deleteTagNFC(id: Long)
     fun findTagNFCById(id: Long): TagNfc?
+    fun findTagNFCByValue(uid: String): TagNfc?
 }
