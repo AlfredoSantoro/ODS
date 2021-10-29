@@ -28,7 +28,7 @@ class UserServiceImpl(
         // 1. codifica password
         createAccount.password = PasswordManager.encodePassword(createAccount.password)
 
-        // 2. registra account se e soltanto se non esso non esiste già
+        // 2. registra account se e soltanto se non esiste già
         val account = this.accountManagerStorage.signUpANewAccount(createAccount)
 
         return SESALabAccount(account)
