@@ -22,3 +22,4 @@ settings:
   default-names:
     reservationHistory: reservationHistoryInDays
     reservationDurationHour: reservationDurationHour
+    checkInFrequency: checkInFrequency

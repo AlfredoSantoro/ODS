@@ -12,13 +12,20 @@ object ReservationEntityFactory
                           studySeat: StudySeat,
                           name: String): Reservation
     {
-        return Reservation(name, baseReservation.start, baseReservation.end, account, studySeat, false,
-            baseReservation.reservationId)
+        val id = if ( baseReservation.id == -1L)
+        {
+            null
+        }
+        else
+        {
+            baseReservation.id
+        }
+        return Reservation(name, baseReservation.start, baseReservation.end, account, studySeat, false, id)
     }
 
     fun createBaseReservation(reservation: Reservation): BaseReservation
     {
         return BaseReservation(reservation.start, reservation.end,
-            AssetFactory.createAsset(reservation.studySeatReserved), AccountFactory.createAccount(reservation.account))
+            AssetFactory.createAsset(reservation.studySeatReserved), AccountFactory.createAccount(reservation.account), reservation.id ?: -1)
     }
 }

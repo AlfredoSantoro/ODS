@@ -6,6 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 
 @Repository
 class CheckInRepositoryImpl(
@@ -18,5 +19,24 @@ class CheckInRepositoryImpl(
     {
         this.save(checkIn)
         this.logger.info("### check-in saved successfully for reservation #${checkIn.reservation.id}")
+    }
+
+    override fun findRecentCheckInOfReservation(reservationId: Long): CheckIn?
+    {
+        val query = this.em.createQuery("select recent from CheckIn as recent where recent.time = " +
+                "(select MAX(maxCheckIn.time) from CheckIn as maxCheckIn where maxCheckIn.reservation.id = :reservationId)",
+            CheckIn::class.java)
+
+        query.setParameter("reservationId", reservationId)
+
+        return try
+        {
+            query.singleResult
+        }
+        catch (error: NoResultException)
+        {
+            this.logger.info("### no check-in found for reervation #$reservationId")
+            null
+        }
     }
 }

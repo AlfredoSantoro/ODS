@@ -41,7 +41,7 @@ class ReservationServiceImpl(
         synchronized(Any()) {
             val newReservation = this.reservationManager.createReservation(
                 AccountFactory.createAccount(reservationInsertDTO.account), reservationInsertDTO.start,
-                reservationInsertDTO.reservationDuration, AssetFactory.createAsset(reservationInsertDTO.studySeat))
+                reservationInsertDTO.reservationDuration, -1, AssetFactory.createAsset(reservationInsertDTO.studySeat))
 
             this.reservationRepository.insertReservation(
                 ReservationEntityFactory.createReservation(newReservation, reservationInsertDTO.account,

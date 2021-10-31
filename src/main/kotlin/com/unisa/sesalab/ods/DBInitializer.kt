@@ -36,8 +36,12 @@ class DBInitializer(
     @Value("\${settings.default-names.reservationDurationHour}")
     private lateinit var reservationDurationHour: String
 
+    @Value("\${settings.default-names.checkInFrequency}")
+    private lateinit var checkInFrequency: String
+
     private val days = 7
     private val reservationDurationInHour = 1
+    private val checkInFrequencyToMinutes = 15
 
     private val logger: Logger = LoggerFactory.getLogger(DBInitializer::class.java)
 
@@ -117,6 +121,10 @@ class DBInitializer(
         // RESERVATION DURATION
         this.settingService.createSetting(SettingDTO(this.reservationDurationHour, this.reservationDurationInHour,
         "reservation duration", ChronoUnit.HOURS))
+
+        // CHECK IN FREQUENCY
+        this.settingService.createSetting(SettingDTO(this.checkInFrequency, this.checkInFrequencyToMinutes,
+            "check-in frequency", ChronoUnit.MINUTES))
 
         this.logger.info("### Settings created")
     }
