@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.OffsetDateTime
 
-class ReservationRepositorTest: BaseTest()
+class ReservationRepositoryTest: BaseTest()
 {
     @Test
     fun `Should get the reservation on going of an user`()
