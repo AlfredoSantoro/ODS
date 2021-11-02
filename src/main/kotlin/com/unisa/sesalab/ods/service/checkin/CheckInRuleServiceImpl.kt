@@ -58,14 +58,13 @@ class CheckInRuleServiceImpl(
         val recentCheckIn = this.checkInService.findRecentCheckInOfReservation(checkIn.reservation.id)
         return if ( recentCheckIn == null )
         {
-            val checkInInterval = OffsetDateTimeUtils.addDurationToTime(checkIn.reservation.start, Duration.ofMinutes(frequencyInMinutes.toLong()))
-            checkInInterval !== null && OffsetDateTimeUtils.isStartGreaterThanEnd(checkInInterval, checkIn.time)
+            val endCheckInTimeAllowed = OffsetDateTimeUtils.addDurationToTime(checkIn.reservation.start, Duration.ofMinutes(frequencyInMinutes.toLong()))
+            OffsetDateTimeUtils.isStartGreaterThanEnd(endCheckInTimeAllowed, checkIn.time)
         }
         else
         {
-            val checkInInterval = OffsetDateTimeUtils.addDurationToTime(recentCheckIn.time, Duration.ofMinutes(frequencyInMinutes.toLong()))
-            checkInInterval !== null
-            && OffsetDateTimeUtils.isStartGreaterThanEnd(checkInInterval, checkIn.time)
+            val endCheckInTimeAllowed = OffsetDateTimeUtils.addDurationToTime(recentCheckIn.time, Duration.ofMinutes(frequencyInMinutes.toLong()))
+            OffsetDateTimeUtils.isStartGreaterThanEnd(endCheckInTimeAllowed, checkIn.time)
             && recentCheckIn.isValid
         }
     }

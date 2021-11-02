@@ -18,7 +18,7 @@ class ReservationRepositorTest: BaseTest()
     {
         val account = CreateAccount("Mario", "Rossi","mariorossi@test.it" ,
             "mariored4", "lamiapass", AccountType.USER)
-        val seSaLabAccount = this.userServiceImpl.signUpUser(account)
+        val seSaLabAccount = this.userService.signUpUser(account)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
         Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))

@@ -9,21 +9,25 @@ import com.unisa.sesalab.ods.factory.AssetFactory
 import com.unisa.sesalab.ods.factory.ReservationEntityFactory
 import com.unisa.sesalab.ods.model.Reservation
 import com.unisa.sesalab.ods.repository.reservations.ReservationRepository
+import com.unisa.sesalab.ods.service.checkin.CheckInService
 import com.unisa.sesalab.ods.service.seat.SeatService
 import com.unisa.sesalab.ods.service.setting.SettingService
 import development.kit.reservation.ReservationManager
+import development.kit.utils.OffsetDateTimeUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.time.Duration
+import java.time.OffsetDateTime
 
 @Service
 class ReservationServiceImpl(
         private val reservationRepository: ReservationRepository,
         private val seatService: SeatService,
         private val settingService: SettingService,
-        private val reservationRulesService: ReservationRulesService
+        private val reservationRulesService: ReservationRulesService,
+        private val checkInService: CheckInService
 ): ReservationService
 {
     @Value("\${settings.default-names.reservationHistory}")
@@ -88,6 +92,8 @@ class ReservationServiceImpl(
         }
     }
 
+    override fun terminateAllReservationsByIds(ids: List<Long>): Int { return this.reservationRepository.terminateAllReservationsById(ids) }
+
     override fun pauseReservation(id: Long)
     {
         val res = this.reservationRepository.viewReservation(id)
@@ -118,4 +124,32 @@ class ReservationServiceImpl(
     }
 
     override fun viewAllReservationsOnGoing(): List<Reservation> { return this.reservationRepository.viewAllReservationsOnGoing() }
+
+    override fun getReservationsToTerminate(onGoingReservations: List<Reservation>, checkInFrequency: Int): List<Long>
+    {
+        val reservationsIds = arrayListOf<Long>()
+        // 1. Process all ongoing reservations
+        onGoingReservations.forEach { ongoingReservation ->
+
+            // 2. Find recent check in of reservation
+            val lastCheckIn = this.checkInService.findRecentCheckInOfReservation(ongoingReservation.id!!)
+
+            // 3. Checks if ongoing reservations is to delete
+            val toTerminate = if ( lastCheckIn == null )
+            {
+                val endCheckInTimeAllowed = OffsetDateTimeUtils.addDurationToTime(ongoingReservation.start,
+                    Duration.ofMinutes(checkInFrequency.toLong()))
+                OffsetDateTimeUtils.isStartGreaterThanEnd(OffsetDateTime.now(), endCheckInTimeAllowed)
+            }
+            else
+            {
+                val endCheckInTimeAllowed = OffsetDateTimeUtils.addDurationToTime(lastCheckIn.time,
+                    Duration.ofMinutes(checkInFrequency.toLong()))
+                !lastCheckIn.isValid || OffsetDateTimeUtils.isStartGreaterThanEnd(OffsetDateTime.now(), endCheckInTimeAllowed)
+            }
+            // 4. If the ongoing reservation is to terminate add it to the reservationsToDeleteIds list
+            if ( toTerminate ) reservationsIds.add(ongoingReservation.id)
+        }
+        return reservationsIds
+    }
 }

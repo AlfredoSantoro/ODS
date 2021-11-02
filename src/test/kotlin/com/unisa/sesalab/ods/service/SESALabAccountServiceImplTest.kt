@@ -15,7 +15,7 @@ class SESALabAccountServiceImplTest: BaseTest()
     {
         val user = CreateAccount("Mario", "Rossi","mariorossi@test.it" ,
             "mariored4", "lamiapass", AccountType.USER)
-        val seSaLabAccount = this.userServiceImpl.signUpUser(user)
+        val seSaLabAccount = this.userService.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
         Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))
@@ -26,12 +26,12 @@ class SESALabAccountServiceImplTest: BaseTest()
     {
         val user = CreateAccount("Mario", "Rossi","mariorossi@test.it" ,
             "mariored3", "lamiapass", AccountType.USER)
-        val seSaLabAccount = this.userServiceImpl.signUpUser(user)
+        val seSaLabAccount = this.userService.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
         Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))
-        this.userServiceImpl.deleteAccount(seSaLabAccount.id!!)
-        Assertions.assertThat(this.userServiceImpl.viewAccount(seSaLabAccount.id!!)).isNull()
+        this.userService.deleteAccount(seSaLabAccount.id!!)
+        Assertions.assertThat(this.userService.viewAccount(seSaLabAccount.id!!)).isNull()
     }
 
     @Test
@@ -39,12 +39,12 @@ class SESALabAccountServiceImplTest: BaseTest()
     {
         val user = CreateAccount("Mario", "Rossi","mariorossi@test.it" ,
             "mariored2", "lamiapass", AccountType.USER)
-        val seSaLabAccount = this.userServiceImpl.signUpUser(user)
+        val seSaLabAccount = this.userService.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
         Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))
 
-        val userUpdated = this.userServiceImpl.updateAccount(
+        val userUpdated = this.userService.updateAccount(
             UpdateAccount(seSaLabAccount.id!!, seSaLabAccount.name, surname = "usertest_001",
                 "newemail@test.it","newusername_today", password = "newpass", seSaLabAccount.userType)
         )
@@ -60,11 +60,11 @@ class SESALabAccountServiceImplTest: BaseTest()
     {
         val user = CreateAccount("Mario", "Rossi","mariorossi@test.it" ,
             "mariored", "lamiapass", AccountType.ADMIN)
-        val seSaLabAccount = this.userServiceImpl.signUpUser(user)
+        val seSaLabAccount = this.userService.signUpUser(user)
         Assertions.assertThat(seSaLabAccount).isNotNull
         Assertions.assertThat(seSaLabAccount.id).isNotEqualTo(-1)
         Assertions.assertThat(seSaLabAccount.encodedPassword).isEqualTo(PasswordManager.encodePassword("lamiapass"))
-        val accountFounded = this.userServiceImpl.findUserByUsername(seSaLabAccount.username)
+        val accountFounded = this.userService.findUserByUsername(seSaLabAccount.username)
         Assertions.assertThat(accountFounded).isNotNull
         Assertions.assertThat(accountFounded!!.username).isEqualTo(user.username)
     }

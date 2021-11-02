@@ -9,6 +9,7 @@ interface ReservationRepository
     fun insertReservation(reservation: Reservation)
     fun updateReservation(reservation: Reservation)
     fun deleteReservationById(id :Long)
+    fun terminateAllReservationsById(ids :List<Long>): Int
     fun viewReservation(id: Long): Reservation?
     fun findReservationOnGoingByUser(username: String): Reservation?
     fun viewAllReservationsOnGoing(): List<Reservation>

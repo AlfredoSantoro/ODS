@@ -24,6 +24,16 @@ class ReservationRepositoryImpl(
 
     override fun deleteReservationById(id: Long) { this.delete(id) }
 
+    override fun terminateAllReservationsById(ids: List<Long>): Int
+    {
+        val query = this.em.createQuery("update Reservation as res set res.end = :now where res.id in :ids")
+        query.setParameter("ids", ids)
+        query.setParameter("now", OffsetDateTime.now())
+        val reservationsDeleted = query.executeUpdate()
+        this.logger.info("### $reservationsDeleted/${ids.size} reservations have been terminated successfully")
+        return reservationsDeleted
+    }
+
     override fun viewReservation(id: Long): Reservation? { return this.findById(id) }
 
     override fun findReservationOnGoingByUser(username: String): Reservation?
