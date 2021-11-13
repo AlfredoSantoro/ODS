@@ -39,16 +39,18 @@ class CheckInRuleServiceImpl(
 
         this.reservationRulesManager.checkReservationOwner(userLogged, baseReservation!!)
 
-        val tagNFC = this.tagNFCService.findTagNFCByValue(checkInDTO.nfcTagId)
-        if ( tagNFC === null )
+        val tagNFCScanned = this.tagNFCService.findTagNFCByValue(checkInDTO.nfcTagId)
+        if ( tagNFCScanned === null )
         {
             throw IllegalArgumentException("NFC tag not found")
         }
-        this.reservationRulesManager.checkReservationNfcTag(tagNFC.value, TagNFC(tagNFC.name, tagNFC.value))
+        val tagNFCOfSeatReserved = reservation!!.studySeatReserved.tagNfc
+        this.reservationRulesManager.checkReservationNfcTag(tagNFCScanned.value,
+            TagNFC(tagNFCOfSeatReserved.name, tagNFCOfSeatReserved.value))
 
         this.reservationRulesManager.checkReservationOngoing(baseReservation)
 
-        return reservation!!
+        return reservation
     }
 
     override fun isInTime(checkIn: CheckIn): Boolean

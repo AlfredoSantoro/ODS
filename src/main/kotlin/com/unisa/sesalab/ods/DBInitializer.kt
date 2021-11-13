@@ -18,7 +18,6 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.temporal.ChronoUnit
-import java.util.*
 
 @Component
 class DBInitializer(
@@ -81,18 +80,18 @@ class DBInitializer(
     {
         this.logger.info("### Creating tag NFC")
 
-        val tagNFC = listOf(this.tagNFCService.createTagNFC(TagNfcDTO("tag1", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag2", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag3", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag4", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag5", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag6", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag7", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag8", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag9", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag10", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag11", "${UUID.randomUUID()}")),
-        this.tagNFCService.createTagNFC(TagNfcDTO("tag12", "${UUID.randomUUID()}")))
+        val tagNFC = listOf(this.tagNFCService.createTagNFC(TagNfcDTO("tag1", "0459dc0800ac00")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag2", "0460d409006800")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag3", "0469b40600d200")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag4", "0420e1ab00c000")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag5", "0431c00d000600")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag6", "04a0f482002300")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag7", "0448d802008300")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag8", "0419ed2a00e400")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag9", "04a8e08100f000")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag10", "04b9d58300c700")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag11", "0421858e00b500")),
+        this.tagNFCService.createTagNFC(TagNfcDTO("tag12", "0469940c00e500")))
 
         this.logger.info("### Tag NFC created")
 
@@ -104,7 +103,7 @@ class DBInitializer(
         this.logger.info("### Creating seats")
 
         this.initTagNFC().forEachIndexed { index, tagNfc ->
-            this.studySeats.add(this.seatsService.createSeat(SeatInsertDTO("seat$index", true, tagNfc.id!!))!!)
+            this.studySeats.add(this.seatsService.createSeat(SeatInsertDTO("S$index", true, tagNfc.id!!))!!)
         }
 
         this.logger.info("### Seats created")

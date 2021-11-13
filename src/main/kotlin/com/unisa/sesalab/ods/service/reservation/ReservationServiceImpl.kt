@@ -47,12 +47,13 @@ class ReservationServiceImpl(
                 AccountFactory.createAccount(reservationInsertDTO.account), reservationInsertDTO.start,
                 reservationInsertDTO.reservationDuration, -1, AssetFactory.createAsset(reservationInsertDTO.studySeat))
 
-            this.reservationRepository.insertReservation(
-                ReservationEntityFactory.createReservation(newReservation, reservationInsertDTO.account,
-                    reservationInsertDTO.studySeat, reservationInsertDTO.name))
+            val reservationToSave = ReservationEntityFactory.createReservation(newReservation, reservationInsertDTO.account,
+                reservationInsertDTO.studySeat, reservationInsertDTO.name)
+
+            this.reservationRepository.insertReservation(reservationToSave)
 
             this.logger.info("### asset #${reservationInsertDTO.studySeat.id} reserved " +
-                    "by user ${reservationInsertDTO.account.id}")
+                    "by user ${reservationInsertDTO.account.id} from ${reservationToSave.start} to ${reservationToSave.end}")
         }
     }
 
